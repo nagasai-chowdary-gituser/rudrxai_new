@@ -165,7 +165,7 @@ export function DiscoveryWizard() {
                   onChange={(e) => setFormData({...formData, challenges: e.target.value})}
                 />
                 <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-primary" /> RudrxAI will analyze this to recommend the best architecture.
+                  <Sparkles className="w-3 h-3 text-primary" /> Rudrova Labs will analyze this to recommend the best architecture.
                 </p>
               </div>
             </div>

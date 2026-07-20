@@ -48,7 +48,7 @@ export function AiSearchModal({ isOpen, onClose }: { isOpen: boolean, onClose: (
           <input 
             type="text"
             className="flex-1 bg-transparent border-none py-5 text-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0"
-            placeholder="Ask RudrxAI or search resources..."
+            placeholder="Ask Rudrova Labs or search resources..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
@@ -114,7 +114,7 @@ export function AiSearchModal({ isOpen, onClose }: { isOpen: boolean, onClose: (
         <div className="px-4 py-3 border-t border-border bg-background flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <Sparkles className="w-3 h-3 text-primary" />
-            <span>Powered by RudrxAI Semantic Search</span>
+            <span>Powered by Rudrova Labs Semantic Search</span>
           </div>
           <span><kbd className="px-1.5 py-0.5 bg-surface border border-border rounded font-sans">ESC</kbd> to close</span>
         </div>

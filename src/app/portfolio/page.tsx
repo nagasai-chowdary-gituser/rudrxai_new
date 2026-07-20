@@ -9,8 +9,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-  title: "Portfolio | RudrxAI",
-  description: "Explore our work — business websites, AI chatbots, dashboards, voice agents, and custom platforms delivered by RudrxAI.",
+  title: "Portfolio | Rudrova Labs",
+  description: "Explore our work — business websites, AI chatbots, dashboards, voice agents, and custom platforms delivered by Rudrova Labs.",
 }
 
 const projects = [

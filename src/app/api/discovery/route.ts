@@ -47,8 +47,8 @@ export async function POST(request: Request) {
         ai_experience: aiExperience || "N/A",
         preferred_date: preferredDate || "N/A",
         preferred_time: preferredTime || "N/A",
-        subject: `Discovery Call Request from ${fullName} — RudrxAI`,
-        from_name: "RudrxAI Discovery Form",
+        subject: `Discovery Call Request from ${fullName} — Rudrova Labs`,
+        from_name: "Rudrova Labs Discovery Form",
       })
     })
 

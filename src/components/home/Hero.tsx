@@ -65,7 +65,7 @@ export function Hero() {
               {/* Welcome line */}
               <div className={`overflow-hidden mb-4 transition-all duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}>
                 <p className="text-sm md:text-base font-medium tracking-[0.3em] uppercase text-primary animate-[slideUp_0.8s_ease-out_forwards]">
-                  Welcome to RudrxAI Agency
+                  Welcome to Rudrova Labs Agency
                 </p>
               </div>
 

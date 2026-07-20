@@ -20,8 +20,16 @@ const headingFont = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "RudrxAI | Websites, AI Chatbots, Dashboards & Voice Agents",
-  description: "RudrxAI builds production-grade websites, AI chatbots, dashboards, voice agents, and custom business platforms. Affordable. Fast. Reliable.",
+  title: "Rudrova Labs | Websites, AI Chatbots, Dashboards & Voice Agents",
+  description: "Rudrova Labs builds production-grade websites, AI chatbots, dashboards, voice agents, and custom business platforms. Affordable. Fast. Reliable.",
+  icons: {
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+      { url: "/logo.jpeg", type: "image/jpeg" },
+    ],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

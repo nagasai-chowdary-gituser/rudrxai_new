@@ -8,8 +8,8 @@ import { FadeIn, StaggerContainer, StaggerItem } from "@/components/effects/fade
 import { Shield, Rocket, Code, Clock } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "About Us | RudrxAI",
-  description: "Learn about RudrxAI — our mission, values, and the team building affordable digital solutions for businesses worldwide.",
+  title: "About Us | Rudrova Labs",
+  description: "Learn about Rudrova Labs — our mission, values, and the team building affordable digital solutions for businesses worldwide.",
 }
 
 const stats = [
@@ -66,7 +66,7 @@ export default function AboutPage() {
                 We Build Digital Solutions That <span className="gradient-text">Grow Businesses</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                RudrxAI is a product engineering studio that builds affordable, production-grade websites, AI chatbots, dashboards, and custom platforms for businesses of all sizes.
+                Rudrova Labs is a product engineering studio that builds affordable, production-grade websites, AI chatbots, dashboards, and custom platforms for businesses of all sizes.
               </p>
             </div>
           </Container>
@@ -109,7 +109,7 @@ export default function AboutPage() {
             <SectionHeading
               badge="Values"
               title="Why Choose Us"
-              subtitle="What makes RudrxAI different from every other agency."
+              subtitle="What makes Rudrova Labs different from every other agency."
               centered
             />
 

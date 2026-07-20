@@ -6,8 +6,8 @@ import { Section } from "@/components/layout/section"
 import { FadeIn } from "@/components/effects/fade-in"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | RudrxAI",
-  description: "Read the Privacy Policy of RudrxAI to understand how we collect, use, and protect your data.",
+  title: "Privacy Policy | Rudrova Labs",
+  description: "Read the Privacy Policy of Rudrova Labs to understand how we collect, use, and protect your data.",
 }
 
 export default function PrivacyPolicyPage() {
@@ -31,7 +31,7 @@ export default function PrivacyPolicyPage() {
                 <p><strong>Last Updated: July 17, 2026</strong></p>
                 
                 <p>
-                  At RudrxAI, we value your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, use our services, or interact with us.
+                  At Rudrova Labs, we value your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, use our services, or interact with us.
                 </p>
 
                 <h2 className="text-xl font-semibold font-heading text-foreground mt-8 mb-4">1. Information We Collect</h2>

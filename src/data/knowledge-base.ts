@@ -11,8 +11,8 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     id: "company-overview",
     category: "company",
-    title: "About RudrxAI",
-    content: "RudrxAI is an enterprise AI company that builds intelligent systems, AI agents, automation platforms, and software for businesses and governments. We specialize in production-grade AI solutions including multi-agent orchestration, voice AI, RAG knowledge systems, document intelligence, and AI strategy consulting. We serve Fortune 500 companies, governments, healthcare providers, financial institutions, and innovative startups.",
+    title: "About Rudrova Labs",
+    content: "Rudrova Labs is an enterprise AI company that builds intelligent systems, AI agents, automation platforms, and software for businesses and governments. We specialize in production-grade AI solutions including multi-agent orchestration, voice AI, RAG knowledge systems, document intelligence, and AI strategy consulting. We serve Fortune 500 companies, governments, healthcare providers, financial institutions, and innovative startups.",
     keywords: ["rudrx", "about", "company", "who", "what do you do", "overview"]
   },
   {
@@ -102,7 +102,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
     id: "pricing-overview",
     category: "pricing",
     title: "Pricing Overview",
-    content: "RudrxAI offers affordable fixed-price solutions: Business Websites from ₹3,999–₹9,999, AI Chatbots from ₹4,999–₹19,999, AI Dashboards from ₹2,999–₹9,999, Voice AI Agents from ₹5,999–₹29,000, and Custom Platforms at custom quote. All projects include design, development, testing, deployment, and 30 days support. Contact us for a free quote.",
+    content: "Rudrova Labs offers affordable fixed-price solutions: Business Websites from ₹3,999–₹9,999, AI Chatbots from ₹4,999–₹19,999, AI Dashboards from ₹2,999–₹9,999, Voice AI Agents from ₹5,999–₹29,000, and Custom Platforms at custom quote. All projects include design, development, testing, deployment, and 30 days support. Contact us for a free quote.",
     keywords: ["pricing", "cost", "price", "how much", "budget", "tier", "plan", "starter", "growth", "enterprise"]
   },
   {
@@ -164,7 +164,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
     id: "trust-security",
     category: "trust",
     title: "Security & Compliance",
-    content: "RudrxAI maintains enterprise-grade security: SOC2 Type II compliant, HIPAA compliant, GDPR compliant, ISO 27001 certified. All data is encrypted at rest and in transit. We support on-premise deployment, private cloud, and air-gapped environments. Regular penetration testing and security audits.",
+    content: "Rudrova Labs maintains enterprise-grade security: SOC2 Type II compliant, HIPAA compliant, GDPR compliant, ISO 27001 certified. All data is encrypted at rest and in transit. We support on-premise deployment, private cloud, and air-gapped environments. Regular penetration testing and security audits.",
     keywords: ["security", "compliance", "soc2", "hipaa", "gdpr", "encryption", "privacy", "data protection"]
   },
 
@@ -173,7 +173,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
     id: "contact-info",
     category: "contact",
     title: "Contact Information",
-    content: "You can reach RudrxAI at: Email: rudrovalabs@gmail.com | Phone: +91 7989317347 | Office: Remote — Global. For inquiries, visit our contact page. We respond within 24 hours.",
+    content: "You can reach Rudrova Labs at: Email: rudrovalabs@gmail.com | Phone: +91 7989317347 | Office: Remote — Global. For inquiries, visit our contact page. We respond within 24 hours.",
     keywords: ["contact", "email", "phone", "address", "reach", "talk to", "get in touch"]
   },
 ]

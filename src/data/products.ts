@@ -2,39 +2,6 @@ import { Product } from "@/types/products"
 
 export const products: Product[] = [
   {
-    id: "datavision-ai",
-    title: "DataVision AI",
-    tagline: "AutoML & Business Intelligence Platform",
-    overview: "Autonomous business intelligence platform with 50+ ML algorithms, automated EDA, hyperparameter tuning, LLM-powered AI analyst chatbot using RAG, real-time prediction APIs, and interactive dashboard generation.",
-    status: "Available",
-    bestFor: "AI & ML",
-    imageUrl: "/images/projects/datavision.png",
-    liveUrl: "https://datavision-ai-datavision.hf.space/",
-    techStack: ["Python","FastAPI","Scikit-learn","TensorFlow","nltk","FAISS","HuggingFace","React","Docker","groq","plotly"],
-    businessProblems: [
-      "Need for automated intelligence and predictive insights",
-      "Manual processes that can be accelerated by AI"
-    ],
-    features: [
-      { title: "Scalable Architecture", description: "Built using modern frameworks capable of handling high loads." },
-      { title: "Real-time Processing", description: "Fast inference and prediction pipelines." }
-    ],
-    architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
-    integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
-    ],
-    security: [
-      { title: "Data Privacy", description: "All predictions are processed securely." }
-    ],
-    pricing: [
-      { name: "Enterprise", description: "Custom deployment.", features: ["Full source code", "Deployment support"], ctaText: "Contact for Pricing" }
-    ],
-    faq: [
-      { question: "Can this be customized?", answer: "Yes, this model/application can be fine-tuned and integrated into your specific business workflow." }
-    ]
-  },
-  {
     id: "ai-interviewer",
     title: "AI Interviewer",
     tagline: "LLM-powered mock interview system with adaptive difficulty & real-time evaluation",

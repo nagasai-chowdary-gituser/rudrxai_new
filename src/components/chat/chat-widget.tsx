@@ -22,7 +22,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! 👋 I'm the RudrxAI Assistant. I can help you learn about our products, pricing, or book a discovery call.\n\nWhat can I help you with?"
+      content: "Hi! 👋 I'm the Rudrova Labs Assistant. I can help you learn about our products, pricing, or book a discovery call.\n\nWhat can I help you with?"
     }
   ])
   const [input, setInput] = useState("")
@@ -144,7 +144,7 @@ export function ChatWidget() {
             ? "bg-foreground text-background rotate-90 scale-90"
             : "bg-primary text-primary-foreground hover:scale-110 hover:shadow-primary/30"
             }`}
-          aria-label="Chat with RudrxAI"
+          aria-label="Chat with Rudrova Labs"
         >
           {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
         </button>
@@ -163,7 +163,7 @@ export function ChatWidget() {
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
             <div className="flex-1">
-              <div className="font-semibold text-sm text-foreground">RudrxAI Assistant</div>
+              <div className="font-semibold text-sm text-foreground">Rudrova Labs Assistant</div>
               <div className="text-xs text-muted-foreground flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-green-500 inline-block" /> Online
               </div>
@@ -250,7 +250,7 @@ export function ChatWidget() {
               </button>
             </div>
             <div className="text-center mt-2">
-              <span className="text-[10px] text-muted-foreground">Powered by RudrxAI</span>
+              <span className="text-[10px] text-muted-foreground">Powered by Rudrova Labs</span>
             </div>
           </div>
         </div>

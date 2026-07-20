@@ -33,7 +33,7 @@ const industries = [
     name: "Manufacturing",
     slug: "manufacturing",
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=60&w=800&auto=format&fit=crop",
-    desc: "Downtime and quality defects cost manufacturers millions. RudrxAI implements computer vision for instant defect detection and predictive models that alert you before machines break down.",
+    desc: "Downtime and quality defects cost manufacturers millions. Rudrova Labs implements computer vision for instant defect detection and predictive models that alert you before machines break down.",
   },
   {
     name: "Retail & Ecommerce",

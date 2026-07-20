@@ -6,8 +6,8 @@ import { Section } from "@/components/layout/section"
 import { FadeIn } from "@/components/effects/fade-in"
 
 export const metadata: Metadata = {
-  title: "Terms of Service | RudrxAI",
-  description: "Read the Terms of Service of RudrxAI to understand the terms governing your use of our website and services.",
+  title: "Terms of Service | Rudrova Labs",
+  description: "Read the Terms of Service of Rudrova Labs to understand the terms governing your use of our website and services.",
 }
 
 export default function TermsOfServicePage() {
@@ -31,7 +31,7 @@ export default function TermsOfServicePage() {
                 <p><strong>Last Updated: July 17, 2026</strong></p>
                 
                 <p>
-                  Welcome to RudrxAI. By accessing or using our website, services, or tools, you agree to comply with and be bound by the following Terms of Service. Please read them carefully.
+                  Welcome to Rudrova Labs. By accessing or using our website, services, or tools, you agree to comply with and be bound by the following Terms of Service. Please read them carefully.
                 </p>
 
                 <h2 className="text-xl font-semibold font-heading text-foreground mt-8 mb-4">1. Acceptance of Terms</h2>
@@ -41,7 +41,7 @@ export default function TermsOfServicePage() {
 
                 <h2 className="text-xl font-semibold font-heading text-foreground mt-8 mb-4">2. Intellectual Property</h2>
                 <p>
-                  All content, branding, design, graphics, custom code, copy, and trademarks on this site are the intellectual property of RudrxAI or its licensors. You may not reproduce, distribute, modify, or transmit any part of our website or materials without our explicit written permission.
+                  All content, branding, design, graphics, custom code, copy, and trademarks on this site are the intellectual property of Rudrova Labs or its licensors. You may not reproduce, distribute, modify, or transmit any part of our website or materials without our explicit written permission.
                 </p>
 
                 <h2 className="text-xl font-semibold font-heading text-foreground mt-8 mb-4">3. Custom Software Delivery</h2>
@@ -67,7 +67,7 @@ export default function TermsOfServicePage() {
 
                 <h2 className="text-xl font-semibold font-heading text-foreground mt-8 mb-4">5. Limitation of Liability</h2>
                 <p>
-                  To the maximum extent permitted by law, RudrxAI, its directors, employees, or contractors shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, use, or goodwill, arising from your use of our website or services.
+                  To the maximum extent permitted by law, Rudrova Labs, its directors, employees, or contractors shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, use, or goodwill, arising from your use of our website or services.
                 </p>
 
                 <h2 className="text-xl font-semibold font-heading text-foreground mt-8 mb-4">6. Changes to Terms</h2>

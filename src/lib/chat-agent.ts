@@ -119,7 +119,7 @@ function buildSystemPrompt(ragContext: string, intent: string): string {
     intentInstructions = `Give accurate pricing from knowledge base. Mention fixed-price, no hidden costs. Suggest a free quote via /contact.`
   }
 
-  return `You are RudrxAI Assistant — a professional, friendly AI chatbot for RudrxAI, a digital solutions agency.
+  return `You are Rudrova Labs Assistant — a professional, friendly AI chatbot for Rudrova Labs, a digital solutions agency.
 
 PERSONALITY: Professional, warm, concise. Use short paragraphs and bullet points. Never make up info.
 
@@ -199,7 +199,7 @@ function generateFallbackResponse(
 ): AgentResponse {
   const responses: Record<string, string> = {
     greeting:
-      "Hey there! 👋 Welcome to **RudrxAI**!\n\nI'm your AI assistant. I can help you with:\n\n• 💰 **Pricing** — plans from ₹3,999\n• 🛠️ **Services** — websites, chatbots, dashboards & more\n• 📁 **Portfolio** — see our past projects\n• 📞 **Contact** — get a free quote\n\nWhat would you like to know?",
+      "Hey there! 👋 Welcome to **Rudrova Labs**!\n\nI'm your AI assistant. I can help you with:\n\n• 💰 **Pricing** — plans from ₹3,999\n• 🛠️ **Services** — websites, chatbots, dashboards & more\n• 📁 **Portfolio** — see our past projects\n• 📞 **Contact** — get a free quote\n\nWhat would you like to know?",
 
     farewell:
       "Thanks for chatting with us! 🙏\n\nIf you need anything else, feel free to come back anytime. You can also:\n\n• 📞 [Contact us](/contact) for a free quote\n• 📧 Email us at **rudrovalabs@gmail.com**\n• 📱 Call/WhatsApp: **+91 7989317347**\n\nHave a great day! 🚀",
@@ -211,7 +211,7 @@ function generateFallbackResponse(
       "Here's our pricing overview 💰\n\n| Service | Price Range |\n|---------|------------|\n| 🌐 Business Website | ₹3,999 – ₹9,999 |\n| 🤖 AI Chatbot | ₹4,999 – ₹19,999 |\n| 📊 AI Dashboard | ₹2,999 – ₹9,999 |\n| 🎙️ Voice AI Agent | ₹5,999 – ₹29,000 |\n| 🔧 Custom Platform | Custom Quote |\n\n✅ **Fixed-price** — no hidden costs, no hourly billing.\n\n👉 [View Full Pricing](/pricing) or [Get a Free Quote](/contact)",
 
     services:
-      "Here's what we build at **RudrxAI** 🚀\n\n• 🌐 **Business Websites** — responsive, fast, SEO-optimized\n• 🤖 **AI Chatbots** — 24/7 customer support automation\n• 📊 **AI Dashboards** — real-time analytics & insights\n• 🎙️ **Voice AI Agents** — automated phone/call handling\n• 🏥 **Healthcare Platforms** — patient portals, telemedicine\n• 🏠 **Real Estate Solutions** — property listings, virtual tours\n• 🛒 **E-Commerce** — online stores with payment integration\n• 📚 **EdTech / LMS** — learning management systems\n• 🔧 **Custom Platforms** — tailored to your business\n\n👉 [Explore Services](/services) or [Get a Quote](/contact)",
+      "Here's what we build at **Rudrova Labs** 🚀\n\n• 🌐 **Business Websites** — responsive, fast, SEO-optimized\n• 🤖 **AI Chatbots** — 24/7 customer support automation\n• 📊 **AI Dashboards** — real-time analytics & insights\n• 🎙️ **Voice AI Agents** — automated phone/call handling\n• 🏥 **Healthcare Platforms** — patient portals, telemedicine\n• 🏠 **Real Estate Solutions** — property listings, virtual tours\n• 🛒 **E-Commerce** — online stores with payment integration\n• 📚 **EdTech / LMS** — learning management systems\n• 🔧 **Custom Platforms** — tailored to your business\n\n👉 [Explore Services](/services) or [Get a Quote](/contact)",
 
     website:
       "We build stunning, production-ready **websites** 🌐\n\n• **Business websites** from ₹3,999\n• Mobile-responsive & SEO-optimized\n• Modern design with smooth animations\n• Fast loading with Next.js / React\n• Custom domains & deployment\n\nEvery website is built from scratch — no templates.\n\n👉 [View Portfolio](/portfolio) | [Get a Quote](/contact)",
@@ -229,7 +229,7 @@ function generateFallbackResponse(
       "Check out our recent work 🏆\n\n• 🏠 **PropertyNest** — AI real estate platform\n• 🏥 **MedConnect** — healthcare management\n• 🛒 **ShopSmart** — e-commerce with AI recommendations\n• 📊 **InsightIQ** — business analytics dashboard\n• 📚 **LearnHub** — EdTech LMS platform\n• 🤖 **SalesBot** — lead generation chatbot\n\n**50+ projects delivered** across 10+ industries.\n\n👉 [View Full Portfolio](/portfolio)",
 
     about:
-      "**RudrxAI** is a digital solutions agency 🏢\n\n• 🚀 **50+ projects** delivered\n• 👥 **45+ happy clients** worldwide\n• ⏱️ **99.9% uptime** guarantee\n• 🌍 **Remote-first** — serving clients globally\n• 📧 **rudrovalabs@gmail.com**\n• 📱 **+91 7989317347**\n\nWe build websites, AI chatbots, dashboards, voice agents, and custom platforms for businesses of all sizes.\n\n👉 [Learn More About Us](/about)",
+      "**Rudrova Labs** is a digital solutions agency 🏢\n\n• 🚀 **50+ projects** delivered\n• 👥 **45+ happy clients** worldwide\n• ⏱️ **99.9% uptime** guarantee\n• 🌍 **Remote-first** — serving clients globally\n• 📧 **rudrovalabs@gmail.com**\n• 📱 **+91 7989317347**\n\nWe build websites, AI chatbots, dashboards, voice agents, and custom platforms for businesses of all sizes.\n\n👉 [Learn More About Us](/about)",
 
     contact:
       "Here's how to reach us 📞\n\n• 📧 **Email:** rudrovalabs@gmail.com\n• 📱 **Phone/WhatsApp:** +91 7989317347\n• 🌍 **Office:** Remote — Global\n• ⏰ **Response time:** Within 24 hours\n\nYou can also fill out the contact form for a **free quote**:\n\n👉 [Contact Us](/contact)",
@@ -247,7 +247,7 @@ function generateFallbackResponse(
       "We've got you covered after launch 🛡️\n\n• **30 days free support** after delivery\n• Bug fixes & minor updates included\n• Extended maintenance plans available\n• Priority support via WhatsApp/email\n• Regular security updates\n\nYour project doesn't end at launch — we're here for the long run.\n\n👉 [Contact Support](/contact)",
 
     comparison:
-      "Why choose **RudrxAI**? 🏆\n\n• ✅ **Fixed pricing** — no hourly surprises\n• ✅ **Guaranteed timelines** — we commit and deliver\n• ✅ **Full-stack** — design, dev, AI, deployment\n• ✅ **Direct communication** — talk to the developers\n• ✅ **Post-launch support** — 30 days free\n• ✅ **Affordable** — websites from ₹3,999\n\nWe're not a faceless agency — we're your **tech partner**.\n\n👉 [See Our Work](/portfolio) | [Get a Quote](/contact)",
+      "Why choose **Rudrova Labs**? 🏆\n\n• ✅ **Fixed pricing** — no hourly surprises\n• ✅ **Guaranteed timelines** — we commit and deliver\n• ✅ **Full-stack** — design, dev, AI, deployment\n• ✅ **Direct communication** — talk to the developers\n• ✅ **Post-launch support** — 30 days free\n• ✅ **Affordable** — websites from ₹3,999\n\nWe're not a faceless agency — we're your **tech partner**.\n\n👉 [See Our Work](/portfolio) | [Get a Quote](/contact)",
 
     payment:
       "Our payment process is flexible 💳\n\n• **50% advance** to start the project\n• **50% on delivery** — pay when you're satisfied\n• **UPI, Bank Transfer, or PayPal** accepted\n• No hidden fees or extra charges\n• Full invoice provided\n\nFor larger projects, we offer **milestone-based payments**.\n\n👉 [Discuss Your Project](/contact)",
@@ -269,7 +269,7 @@ function generateFallbackResponse(
 
   // Default fallback
   return {
-    message: "Thanks for your question! I'm the **RudrxAI Assistant** 🤖\n\nI can help you with:\n\n• 🛠️ **Services** — Websites, Chatbots, Dashboards, Voice Agents\n• 💰 **Pricing** — Fixed-price plans from ₹3,999\n• 📁 **Portfolio** — 50+ projects across 10+ industries\n• 📞 **Contact** — Get a free quote\n• ⏰ **Timelines** — Delivery estimates\n• 🛡️ **Support** — Post-launch help\n\nJust ask me anything!",
+    message: "Thanks for your question! I'm the **Rudrova Labs Assistant** 🤖\n\nI can help you with:\n\n• 🛠️ **Services** — Websites, Chatbots, Dashboards, Voice Agents\n• 💰 **Pricing** — Fixed-price plans from ₹3,999\n• 📁 **Portfolio** — 50+ projects across 10+ industries\n• 📞 **Contact** — Get a free quote\n• ⏰ **Timelines** — Delivery estimates\n• 🛡️ **Support** — Post-launch help\n\nJust ask me anything!",
     intent: "general_question",
   }
 }

@@ -120,7 +120,7 @@ export default function DocsPage() {
           
           <h1 className="text-4xl font-bold font-heading mb-6 text-foreground">Introduction</h1>
           <p className="text-lg text-muted-foreground mb-12">
-            Welcome to the RudrxAI documentation. Build secure, enterprise-grade AI agents and RAG pipelines using our unified API.
+            Welcome to the Rudrova Labs documentation. Build secure, enterprise-grade AI agents and RAG pipelines using our unified API.
           </p>
           
           {/* Quickstart Grid */}

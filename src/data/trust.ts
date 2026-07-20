@@ -32,7 +32,7 @@ export const trustData: TrustCenterData = {
       id: "data-encryption",
       title: "Data Encryption & Protection",
       category: "Security",
-      content: "All data ingested by RudrxAI is encrypted both in transit (using TLS 1.3) and at rest (using AES-256). We utilize zero-trust architecture principles across our entire ecosystem."
+      content: "All data ingested by Rudrova Labs is encrypted both in transit (using TLS 1.3) and at rest (using AES-256). We utilize zero-trust architecture principles across our entire ecosystem."
     },
     {
       id: "access-control",
@@ -62,7 +62,7 @@ export const trustData: TrustCenterData = {
       id: "infrastructure-monitoring",
       title: "Infrastructure & Monitoring",
       category: "Infrastructure",
-      content: "RudrxAI operates on isolated containerized environments within AWS and Azure. We employ 24/7 automated threat detection, anomalous behavior alerting, and regular penetration testing."
+      content: "Rudrova Labs operates on isolated containerized environments within AWS and Azure. We employ 24/7 automated threat detection, anomalous behavior alerting, and regular penetration testing."
     },
     {
       id: "incident-response",

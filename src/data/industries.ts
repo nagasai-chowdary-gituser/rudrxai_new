@@ -6,7 +6,7 @@ export const industries: IndustryData[] = [
     title: "Healthcare",
     heroSubtitle: "Building AI Healthcare Systems That Improve Patient Outcomes.",
     heroDescription: "Transform clinical workflows, automate medical documentation, and enhance patient care with secure, compliant enterprise AI systems.",
-    overview: "Healthcare providers face unprecedented administrative burdens that detract from patient care. RudrxAI builds secure, HIPAA-compliant intelligent systems that automate documentation, streamline operations, and provide clinical decision support.",
+    overview: "Healthcare providers face unprecedented administrative burdens that detract from patient care. Rudrova Labs builds secure, HIPAA-compliant intelligent systems that automate documentation, streamline operations, and provide clinical decision support.",
     statistics: [
       { value: "45%", label: "Administrative Work", description: "Can be fully automated using intelligent systems." },
       { value: "3x", label: "Faster Documentation", description: "Using voice-to-text medical OCR and LLMs." }
@@ -61,7 +61,7 @@ export const industries: IndustryData[] = [
     title: "Finance & Banking",
     heroSubtitle: "Secure AI For Financial Intelligence.",
     heroDescription: "Automate risk analysis, detect fraud in real-time, and streamline compliance with enterprise-grade predictive AI.",
-    overview: "Financial institutions must balance rapid customer service with stringent regulatory compliance. RudrxAI provides systems that accelerate loan processing, automate KYC, and deliver real-time risk intelligence.",
+    overview: "Financial institutions must balance rapid customer service with stringent regulatory compliance. Rudrova Labs provides systems that accelerate loan processing, automate KYC, and deliver real-time risk intelligence.",
     statistics: [
       { value: "68%", label: "Document Processing", description: "Can be automated with vision models." },
       { value: "0.1s", label: "Fraud Detection", description: "Real-time transaction analysis latency." }
@@ -114,7 +114,7 @@ export const industries: IndustryData[] = [
     title: "Government (B2G)",
     heroSubtitle: "Secure AI For Digital Governance.",
     heroDescription: "Modernize public services, automate citizen support, and break down knowledge silos with sovereign AI.",
-    overview: "Governments hold massive amounts of data in silos. RudrxAI builds sovereign, highly secure systems that help agencies process documents faster, support citizens 24/7, and analyze policy impact.",
+    overview: "Governments hold massive amounts of data in silos. Rudrova Labs builds sovereign, highly secure systems that help agencies process documents faster, support citizens 24/7, and analyze policy impact.",
     statistics: [
       { value: "24x7", label: "Citizen Support", description: "Autonomous omnichannel assistance." },
       { value: "10x", label: "Faster Search", description: "Across massive legacy archives." }
@@ -168,7 +168,7 @@ export const industries: IndustryData[] = [
     title: "Manufacturing",
     heroSubtitle: "Intelligent Systems For Industry 4.0.",
     heroDescription: "Predict machine failures, automate quality inspection, and optimize supply chains with industrial AI.",
-    overview: "Downtime and quality defects cost manufacturers millions. RudrxAI implements computer vision for instant defect detection and predictive models that alert you before machines break down.",
+    overview: "Downtime and quality defects cost manufacturers millions. Rudrova Labs implements computer vision for instant defect detection and predictive models that alert you before machines break down.",
     statistics: [
       { value: "30%", label: "Less Downtime", description: "Using predictive maintenance models." },
       { value: "99.9%", label: "Defect Detection", description: "With high-speed computer vision." }
@@ -221,7 +221,7 @@ export const industries: IndustryData[] = [
     title: "Retail & Ecommerce",
     heroSubtitle: "Hyper-Personalized AI For Modern Commerce.",
     heroDescription: "Drive sales with intelligent recommendations, automate customer support, and forecast demand with precision.",
-    overview: "Retailers need to provide personalized experiences at scale while managing complex logistics. RudrxAI builds systems that understand customer intent, price dynamically, and optimize inventory.",
+    overview: "Retailers need to provide personalized experiences at scale while managing complex logistics. Rudrova Labs builds systems that understand customer intent, price dynamically, and optimize inventory.",
     statistics: [
       { value: "35%", label: "Conversion Lift", description: "From AI-driven personalized recommendations." },
       { value: "80%", label: "Support Automation", description: "Resolving order tracking and returns instantly." }
@@ -284,8 +284,8 @@ remainingIndustries.forEach(name => {
     id: name.toLowerCase().replace(/ /g, '-'),
     title: name === "Logistics" ? "Logistics & Supply Chain" : name === "HR" ? "Human Resources" : name,
     heroSubtitle: `Enterprise AI Transformation For ${name === "HR" ? "Human Resources" : name}.`,
-    heroDescription: `Automate workflows, enhance decision making, and drive unprecedented growth in the ${name.toLowerCase()} sector with RudrxAI.`,
-    overview: `The ${name.toLowerCase()} industry is rapidly evolving. Legacy systems and manual processes are no longer sufficient. RudrxAI builds intelligent, scalable systems tailored specifically for the unique operational challenges of ${name.toLowerCase()}.`,
+    heroDescription: `Automate workflows, enhance decision making, and drive unprecedented growth in the ${name.toLowerCase()} sector with Rudrova Labs.`,
+    overview: `The ${name.toLowerCase()} industry is rapidly evolving. Legacy systems and manual processes are no longer sufficient. Rudrova Labs builds intelligent, scalable systems tailored specifically for the unique operational challenges of ${name.toLowerCase()}.`,
     statistics: [
       { value: "40%", label: "Efficiency Gain", description: "Through intelligent workflow automation." },
       { value: "24/7", label: "Continuous Operations", description: "AI agents working around the clock." }
@@ -307,7 +307,7 @@ remainingIndustries.forEach(name => {
     ],
     architecture: [
       { id: "data_source", label: "Enterprise Data", type: "input", connections: ["ai_engine"] },
-      { id: "ai_engine", label: "RudrxAI Engine", type: "process", connections: ["vector_db", "dashboard"] },
+      { id: "ai_engine", label: "Rudrova Labs Engine", type: "process", connections: ["vector_db", "dashboard"] },
       { id: "vector_db", label: "Vector Database", type: "storage" },
       { id: "dashboard", label: "Business Dashboard", type: "output" }
     ],
