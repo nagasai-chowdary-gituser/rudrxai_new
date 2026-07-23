@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     // Web3Forms Integration
     const web3Key = process.env.WEB3FORMS_ACCESS_KEY
     if (!web3Key || web3Key === "your-web3forms-access-key") {
-      console.warn("WEB3FORMS_ACCESS_KEY is not configured in .env")
+      console.warn("WEB3FORMS_ACCESS_KEY is not configured")
       return NextResponse.json({ success: true, note: "Web3Forms key not configured yet" })
     }
 
@@ -73,11 +73,23 @@ export async function POST(request: Request) {
       })
     })
 
-    const web3Result = await web3Response.json()
+    // Safely parse response — Web3Forms sometimes returns HTML on errors
+    const responseText = await web3Response.text()
+    let web3Result: { success?: boolean; message?: string }
+
+    try {
+      web3Result = JSON.parse(responseText)
+    } catch {
+      console.error("Web3Forms returned non-JSON response:", responseText.slice(0, 200))
+      console.error("Status:", web3Response.status, "Key used:", web3Key.slice(0, 8) + "...")
+      return NextResponse.json({ 
+        error: "Contact service error. Please email us directly at rudrovalabs@gmail.com" 
+      }, { status: 502 })
+    }
 
     if (!web3Result.success) {
       console.error("Web3Forms submission failed:", web3Result)
-      return NextResponse.json({ error: "Failed to send message. Please try again." }, { status: 500 })
+      return NextResponse.json({ error: web3Result.message || "Failed to send message. Please try again." }, { status: 500 })
     }
 
     return NextResponse.json({ success: true })
