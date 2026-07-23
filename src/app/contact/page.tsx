@@ -39,16 +39,28 @@ export default function ContactPage() {
     setError("")
 
     try {
-      const res = await fetch("/api/contact", {
+      // Submit directly to Web3Forms from the browser
+      // (Server-side requests get blocked by Cloudflare)
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, source: "contact" }),
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "",
+          name: formData.name,
+          email: formData.email,
+          company: formData.company || "N/A",
+          phone: formData.phone || "N/A",
+          service: formData.service || "N/A",
+          message: formData.message,
+          subject: `New Contact from ${formData.name} — RudrxAI`,
+          from_name: "RudrxAI Contact Form",
+        }),
       })
 
       const data = await res.json()
 
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong")
+      if (!data.success) {
+        throw new Error(data.message || "Something went wrong")
       }
 
       setSuccess(true)
