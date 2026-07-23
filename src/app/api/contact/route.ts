@@ -68,8 +68,8 @@ export async function POST(request: Request) {
         phone: phone || "N/A",
         service: service || "N/A",
         message,
-        subject: `New Contact from ${name} — Rudrova Labs`,
-        from_name: "Rudrova Labs Contact Form",
+        subject: `New Contact from ${name} — RudrxAI`,
+        from_name: "RudrxAI Contact Form",
       })
     })
 
