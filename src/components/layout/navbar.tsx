@@ -7,12 +7,13 @@ import { Container } from "./container"
 import { Logo } from "@/components/ui/logo"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { Menu, X } from "lucide-react"
+import { Menu, X, UserCircle } from "lucide-react"
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/industries", label: "Industries" },
+  { href: "/reviews", label: "Reviews" },
   { href: "/products", label: "Products" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/pricing", label: "Pricing" },
@@ -44,7 +45,7 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 w-full z-50 transition-all duration-300 border-b border-transparent",
+          "fixed top-0 w-full z-[70] transition-all duration-300 border-b border-transparent",
           isScrolled
             ? "bg-background/80 backdrop-blur-md border-border shadow-sm"
             : "bg-transparent"
@@ -71,6 +72,17 @@ export function Navbar() {
             
             {/* Desktop Actions */}
             <div className="hidden lg:flex items-center gap-3">
+              <Link
+                href="/portal"
+                title="Client Portal"
+                aria-label="Client Portal"
+                className="group relative w-9 h-9 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all"
+              >
+                <UserCircle className="w-4 h-4" />
+                <span className="pointer-events-none absolute top-full mt-2 right-0 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background opacity-0 group-hover:opacity-100 transition-opacity">
+                  Client Portal
+                </span>
+              </Link>
               <ThemeToggle />
               <Link href="/contact">
                 <Button>Get a Quote</Button>
@@ -94,7 +106,7 @@ export function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {isMobileOpen && (
-        <div className="fixed inset-0 z-40 bg-background/95 backdrop-blur-lg pt-24 lg:hidden">
+        <div className="fixed inset-0 z-[60] bg-background/95 backdrop-blur-lg pt-24 lg:hidden">
           <Container>
             <nav className="flex flex-col gap-1">
               {navLinks.map((link) => (
@@ -108,6 +120,13 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="border-t border-border my-4" />
+              <Link
+                href="/portal"
+                onClick={() => setIsMobileOpen(false)}
+                className="inline-flex items-center gap-2 text-lg font-medium text-foreground py-3 px-4 rounded-lg hover:bg-muted transition-colors"
+              >
+                <UserCircle className="w-5 h-5 text-primary" /> Client Portal
+              </Link>
               <Link href="/contact" onClick={() => setIsMobileOpen(false)}>
                 <Button className="w-full mt-2" size="lg">Get a Quote</Button>
               </Link>

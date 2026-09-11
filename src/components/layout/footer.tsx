@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { FooterYear } from "@/components/den/secret-taps"
 import { Container } from "./container"
 import { Logo } from "@/components/ui/logo"
 
@@ -21,6 +22,7 @@ export function Footer() {
               <li><Link href="/products" className="text-sm text-muted-foreground hover:text-primary transition-colors">Products</Link></li>
               <li><Link href="/portfolio" className="text-sm text-muted-foreground hover:text-primary transition-colors">Portfolio</Link></li>
               <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pricing</Link></li>
+              <li><Link href="/reviews" className="text-sm text-muted-foreground hover:text-primary transition-colors">Reviews</Link></li>
             </ul>
           </div>
           
@@ -31,6 +33,7 @@ export function Footer() {
               <li><Link href="/portfolio" className="text-sm text-muted-foreground hover:text-primary transition-colors">Portfolio</Link></li>
               <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">Pricing</Link></li>
               <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">Contact</Link></li>
+              <li><Link href="/portal" className="text-sm text-muted-foreground hover:text-primary transition-colors">Client Portal</Link></li>
             </ul>
           </div>
           
@@ -45,7 +48,9 @@ export function Footer() {
         
         <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Rudrova Labs. All rights reserved.
+            ©{" "}
+            <FooterYear>{new Date().getFullYear()}</FooterYear>{" "}
+            Rudrova Labs. All rights reserved.
           </p>
           <div className="flex gap-4">
             <a 

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verify:setup": "node scripts/verify-setup.mjs"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.3.1",
@@ -28,6 +29,7 @@
     "@radix-ui/react-switch": "^1.3.3",
     "@radix-ui/react-tabs": "^1.1.17",
     "@radix-ui/react-tooltip": "^1.2.12",
+    "@supabase/supabase-js": "^2.116.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/nodemailer": "^8.0.1",
     "better-auth": "^1.6.23",
@@ -46,6 +48,7 @@
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
     "remark-gfm": "^4.0.1",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7"
   },
