@@ -31,7 +31,7 @@ export function SolutionsGrid() {
             subtitle="Comprehensive AI engineering capabilities to build exactly what your business needs to stay ahead."
             className="mb-0 flex-1"
           />
-          <Link href="/solutions" className="hidden lg:inline-flex items-center text-primary font-medium hover:text-accent transition-colors">
+          <Link href="/products" className="hidden lg:inline-flex items-center text-primary font-medium hover:text-accent transition-colors">
             View all solutions <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
         </div>
@@ -52,7 +52,7 @@ export function SolutionsGrid() {
                   {item.desc}
                 </p>
                 
-                <Link href="/solutions" className="inline-flex items-center text-sm font-medium text-foreground group-hover:text-primary transition-colors mt-auto">
+                <Link href="/products" className="inline-flex items-center text-sm font-medium text-foreground group-hover:text-primary transition-colors mt-auto">
                   Learn More <ArrowRight className="ml-1 w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </Link>
               </div>
@@ -61,7 +61,7 @@ export function SolutionsGrid() {
         </StaggerContainer>
         
         <div className="mt-8 text-center lg:hidden">
-          <Link href="/solutions" className="inline-flex items-center text-primary font-medium hover:text-accent transition-colors">
+          <Link href="/products" className="inline-flex items-center text-primary font-medium hover:text-accent transition-colors">
             View all solutions <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
         </div>

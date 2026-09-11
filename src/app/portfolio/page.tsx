@@ -9,7 +9,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-  title: "Portfolio | Rudrova Labs",
+  title: "Portfolio",
   description: "Explore our work — business websites, AI chatbots, dashboards, voice agents, and custom platforms delivered by Rudrova Labs.",
 }
 

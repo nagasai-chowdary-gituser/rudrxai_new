@@ -1,100 +1,74 @@
 import { NextResponse } from "next/server"
+import { getClientIp, isRateLimited } from "@/lib/rate-limit"
+import { isValidEmail, sanitize, submitToWeb3Forms } from "@/lib/web3forms"
 
 export const dynamic = "force-dynamic"
 
-// Simple in-memory rate limiter
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
-const RATE_LIMIT = 5 // max requests
-const RATE_WINDOW = 60_000 // per minute
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateLimitMap.get(ip)
-  if (!entry || now > entry.resetTime) {
-    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_WINDOW })
-    return false
-  }
-  entry.count++
-  return entry.count > RATE_LIMIT
-}
-
-function sanitize(str: string): string {
-  return str.replace(/<[^>]*>/g, "").trim().slice(0, 2000)
-}
-
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
+const RATE_LIMIT = 5 // max submissions
+const RATE_WINDOW = 60_000 // per minute per IP
 
 export async function POST(request: Request) {
   try {
-    // Rate limiting
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
-    if (isRateLimited(ip)) {
-      return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 })
+    const ip = getClientIp(request)
+    if (isRateLimited(`contact:${ip}`, { limit: RATE_LIMIT, windowMs: RATE_WINDOW })) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again in a minute." },
+        { status: 429 }
+      )
     }
 
     const body = await request.json()
-    const name = sanitize(body.name || "")
-    const email = sanitize(body.email || "")
-    const company = sanitize(body.company || "")
-    const phone = sanitize(body.phone || "")
-    const service = sanitize(body.service || "")
-    const message = sanitize(body.message || "")
 
-    // Validate required fields
+    // Honeypot: a real user never fills a hidden field. Accept silently so bots
+    // do not learn they were caught, but do not forward the submission.
+    if (sanitize(body.website)) {
+      return NextResponse.json({ success: true })
+    }
+
+    const name = sanitize(body.name, 200)
+    const email = sanitize(body.email, 320)
+    const company = sanitize(body.company, 200)
+    const phone = sanitize(body.phone, 50)
+    const service = sanitize(body.service, 100)
+    const message = sanitize(body.message)
+
     if (!name || !email || !message) {
-      return NextResponse.json({ error: "Name, email, and message are required." }, { status: 400 })
+      return NextResponse.json(
+        { error: "Name, email, and message are required." },
+        { status: 400 }
+      )
     }
 
     if (!isValidEmail(email)) {
-      return NextResponse.json({ error: "Please provide a valid email address." }, { status: 400 })
+      return NextResponse.json(
+        { error: "Please provide a valid email address." },
+        { status: 400 }
+      )
     }
 
-    // Web3Forms Integration
-    const web3Key = process.env.WEB3FORMS_ACCESS_KEY
-    if (!web3Key || web3Key === "your-web3forms-access-key") {
-      console.warn("WEB3FORMS_ACCESS_KEY is not configured")
-      return NextResponse.json({ success: true, note: "Web3Forms key not configured yet" })
-    }
-
-    const web3Response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        access_key: web3Key.trim(),
-        name, email,
-        company: company || "N/A",
-        phone: phone || "N/A",
-        service: service || "N/A",
-        message,
-        subject: `New Contact from ${name} — RudrxAI`,
-        from_name: "RudrxAI Contact Form",
-      })
+    const result = await submitToWeb3Forms({
+      name,
+      email,
+      company: company || "N/A",
+      phone: phone || "N/A",
+      service: service || "N/A",
+      message,
+      subject: `New Contact from ${name} — Rudrova Labs`,
+      from_name: "Rudrova Labs Contact Form",
     })
 
-    // Safely parse response — Web3Forms sometimes returns HTML on errors
-    const responseText = await web3Response.text()
-    let web3Result: { success?: boolean; message?: string }
-
-    try {
-      web3Result = JSON.parse(responseText)
-    } catch {
-      console.error("Web3Forms returned non-JSON response:", responseText.slice(0, 200))
-      console.error("Status:", web3Response.status, "Key used:", web3Key.slice(0, 8) + "...")
-      return NextResponse.json({ 
-        error: "Contact service error. Please email us directly at rudrovalabs@gmail.com" 
-      }, { status: 502 })
-    }
-
-    if (!web3Result.success) {
-      console.error("Web3Forms submission failed:", web3Result)
-      return NextResponse.json({ error: web3Result.message || "Failed to send message. Please try again." }, { status: 500 })
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
     }
 
     return NextResponse.json({ success: true })
   } catch (error: unknown) {
+    // Log the detail, return a generic message — internal errors are not for
+    // the client.
     console.error("Contact submission error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json(
+      { error: "Something went wrong. Please try again." },
+      { status: 500 }
+    )
   }
 }

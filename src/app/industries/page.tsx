@@ -1,5 +1,4 @@
-"use client"
-
+import type { Metadata } from "next"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Container } from "@/components/layout/container"
@@ -10,7 +9,16 @@ import { ArrowRight, Calendar } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-const industries = [
+import { industries as industryData } from "@/data/industries"
+
+export const metadata: Metadata = {
+  title: "Industries",
+  description:
+    "AI systems built for the operational, regulatory, and technical realities of healthcare, finance, government, manufacturing, retail and more.",
+  alternates: { canonical: "/industries" },
+}
+
+const industryCards = [
   {
     name: "Healthcare",
     slug: "healthcare",
@@ -85,6 +93,11 @@ const industries = [
   },
 ]
 
+// Only surface cards that actually have a detail page behind them.
+const industries = industryCards.filter((card) =>
+  industryData.some((industry) => industry.id === card.slug)
+)
+
 export default function IndustriesPage() {
   return (
     <>
@@ -120,11 +133,12 @@ export default function IndustriesPage() {
                 <StaggerItem key={ind.slug}>
                   <div className="group h-full bg-card border border-border rounded-2xl transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 relative overflow-hidden flex flex-col">
                     {/* Image */}
-                    <Link href={`/contact?industry=${ind.slug}`} className="block w-full h-52 relative overflow-hidden group/img">
+                    <Link href={`/industries/${ind.slug}`} className="block w-full h-52 relative overflow-hidden group/img">
                       <Image
                         src={ind.image}
                         alt={ind.name}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover group-hover/img:scale-105 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-90" />
@@ -140,13 +154,13 @@ export default function IndustriesPage() {
                       </p>
                       <div className="mt-auto flex items-center justify-between gap-4 pt-6 border-t border-border">
                         <Link
-                          href={`/contact?industry=${ind.slug}`}
+                          href={`/industries/${ind.slug}`}
                           className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center group/link"
                         >
                           View Details <ArrowRight className="ml-1 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
                         </Link>
                         <Link
-                          href={`/contact?industry=${ind.slug}`}
+                          href="/discovery"
                           className="inline-flex items-center gap-2 text-sm font-bold bg-primary/10 text-primary hover:bg-primary hover:text-white px-5 py-2.5 rounded-full transition-all shadow-sm"
                         >
                           <Calendar className="w-4 h-4" /> Book Call

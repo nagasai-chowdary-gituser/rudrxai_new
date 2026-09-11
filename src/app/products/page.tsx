@@ -1,15 +1,22 @@
-"use client"
-
+import type { Metadata } from "next"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Container } from "@/components/layout/container"
 import { Section } from "@/components/layout/section"
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/effects/fade-in"
+import { FadeIn } from "@/components/effects/fade-in"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, ArrowUpRight, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 import { products } from "@/data/products"
+
+export const metadata: Metadata = {
+  title: "AI Products & Platforms",
+  description:
+    "Production-ready AI platforms built by our team — interview automation, forecasting, document intelligence and more. Each one live, tested, and ready for customisation.",
+  alternates: { canonical: "/products" },
+}
 
 export default function ProductsPage() {
   return (
@@ -77,13 +84,19 @@ export default function ProductsPage() {
                         ))}
                       </ul>
                       
-                      <div className="flex gap-3">
+                      <div className="flex flex-wrap gap-3">
+                        <Link
+                          href={`/products/${product.id}`}
+                          className="inline-flex items-center h-11 px-6 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-all shadow-sm"
+                        >
+                          View Details <ArrowRight className="ml-1.5 w-4 h-4" />
+                        </Link>
                         {product.liveUrl && (
                           <a
                             href={product.liveUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center h-11 px-6 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-all shadow-sm"
+                            className="inline-flex items-center h-11 px-6 rounded-full bg-card border border-border text-foreground font-medium text-sm hover:bg-muted transition-all"
                           >
                             View Live <ArrowUpRight className="ml-1.5 w-4 h-4" />
                           </a>
@@ -98,12 +111,27 @@ export default function ProductsPage() {
                     </div>
                     
                     {/* Visual Side */}
-                    <div className="flex-1 w-full lg:w-auto rounded-2xl border border-border relative overflow-hidden">
-                      <img 
-                        src={product.imageUrl || "/placeholder.jpg"} 
-                        alt={product.title} 
-                        className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105" 
-                      />
+                    <div className="flex-1 w-full lg:w-auto">
+                      {product.imageUrl ? (
+                        <Link
+                          href={`/products/${product.id}`}
+                          className="block relative w-full aspect-[3/2] rounded-2xl border border-border overflow-hidden"
+                        >
+                          <Image
+                            src={product.imageUrl}
+                            alt={`${product.title} interface`}
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 45vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </Link>
+                      ) : (
+                        <div className="w-full aspect-[3/2] rounded-2xl border border-border bg-muted flex items-center justify-center">
+                          <span className="font-heading font-semibold text-muted-foreground">
+                            {product.title}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     
                   </div>

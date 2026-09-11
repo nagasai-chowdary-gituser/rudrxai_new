@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
 import { Navbar } from "@/components/layout/navbar"
 import { Footer } from "@/components/layout/footer"
 import { Container } from "@/components/layout/container"
 import { FadeIn } from "@/components/effects/fade-in"
+import { submitLead } from "@/lib/submit-lead"
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle2 } from "lucide-react"
 
 const services = [
@@ -28,10 +29,12 @@ export default function ContactPage() {
     phone: "",
     service: "",
     message: "",
+    website: "", // honeypot — must stay empty
   })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
+  const id = useId()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,32 +42,30 @@ export default function ContactPage() {
     setError("")
 
     try {
-      // Submit directly to Web3Forms from the browser
-      // (Server-side requests get blocked by Cloudflare)
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "",
-          name: formData.name,
-          email: formData.email,
-          company: formData.company || "N/A",
-          phone: formData.phone || "N/A",
-          service: formData.service || "N/A",
-          message: formData.message,
-          subject: `New Contact from ${formData.name} — RudrxAI`,
-          from_name: "RudrxAI Contact Form",
-        }),
+      // Submits straight to Web3Forms from the browser and falls back to our
+      // own API route if that request cannot get through. See lib/submit-lead.
+      await submitLead("/api/contact", {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        company: formData.company.trim() || "N/A",
+        phone: formData.phone.trim() || "N/A",
+        service: formData.service || "N/A",
+        message: formData.message.trim(),
+        website: formData.website,
+        subject: `New Contact from ${formData.name.trim()} — Rudrova Labs`,
+        from_name: "Rudrova Labs Contact Form",
       })
 
-      const data = await res.json()
-
-      if (!data.success) {
-        throw new Error(data.message || "Something went wrong")
-      }
-
       setSuccess(true)
-      setFormData({ name: "", email: "", company: "", phone: "", service: "", message: "" })
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        phone: "",
+        service: "",
+        message: "",
+        website: "",
+      })
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Failed to submit. Please try again."
       setError(errorMessage)
@@ -119,7 +120,20 @@ export default function ContactPage() {
                       </button>
                     </div>
                   ) : (
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                      {/* Honeypot — hidden from people, tempting to bots. */}
+                      <div className="hidden" aria-hidden="true">
+                        <label htmlFor={`${id}-website`}>Website</label>
+                        <input
+                          id={`${id}-website`}
+                          type="text"
+                          tabIndex={-1}
+                          autoComplete="off"
+                          value={formData.website}
+                          onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                        />
+                      </div>
+
                       {error && (
                         <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium">
                           {error}
@@ -128,8 +142,10 @@ export default function ContactPage() {
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
+                          <label htmlFor={`${id}-name`} className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
                           <input
+                            id={`${id}-name`}
+                            autoComplete="name"
                             type="text"
                             required
                             value={formData.name}
@@ -139,8 +155,10 @@ export default function ContactPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">Email Address *</label>
+                          <label htmlFor={`${id}-email`} className="block text-sm font-medium text-foreground mb-2">Email Address *</label>
                           <input
+                            id={`${id}-email`}
+                            autoComplete="email"
                             type="email"
                             required
                             value={formData.email}
@@ -153,8 +171,10 @@ export default function ContactPage() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">Company</label>
+                          <label htmlFor={`${id}-company`} className="block text-sm font-medium text-foreground mb-2">Company</label>
                           <input
+                            id={`${id}-company`}
+                            autoComplete="organization"
                             type="text"
                             value={formData.company}
                             onChange={(e) => setFormData({ ...formData, company: e.target.value })}
@@ -163,8 +183,10 @@ export default function ContactPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">Phone</label>
+                          <label htmlFor={`${id}-phone`} className="block text-sm font-medium text-foreground mb-2">Phone</label>
                           <input
+                            id={`${id}-phone`}
+                            autoComplete="tel"
                             type="tel"
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -175,8 +197,9 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Service Interest</label>
+                        <label htmlFor={`${id}-service`} className="block text-sm font-medium text-foreground mb-2">Service Interest</label>
                         <select
+                          id={`${id}-service`}
                           value={formData.service}
                           onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                           className="w-full bg-card border border-border rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
@@ -189,8 +212,9 @@ export default function ContactPage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">Message *</label>
+                        <label htmlFor={`${id}-message`} className="block text-sm font-medium text-foreground mb-2">Message *</label>
                         <textarea
+                          id={`${id}-message`}
                           required
                           rows={5}
                           value={formData.message}

@@ -8,7 +8,7 @@ import { FadeIn, StaggerContainer, StaggerItem } from "@/components/effects/fade
 import { Shield, Rocket, Code, Clock } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "About Us | Rudrova Labs",
+  title: "About Us",
   description: "Learn about Rudrova Labs — our mission, values, and the team building affordable digital solutions for businesses worldwide.",
 }
 

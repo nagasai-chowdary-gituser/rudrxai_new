@@ -23,25 +23,31 @@ export function AnimatedCounter({
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
   useEffect(() => {
-    if (isInView) {
-      let startTimestamp: number | null = null
-      const step = (timestamp: number) => {
-        if (!startTimestamp) startTimestamp = timestamp
-        const progress = Math.min((timestamp - startTimestamp) / (duration * 1000), 1)
-        
-        // Easing function (easeOutExpo)
-        const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress)
-        
-        setCount(Math.floor(easeProgress * value))
-        
-        if (progress < 1) {
-          window.requestAnimationFrame(step)
-        } else {
-          setCount(value)
-        }
+    if (!isInView) return
+
+    let frame = 0
+    let startTimestamp: number | null = null
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp
+      const progress = Math.min((timestamp - startTimestamp) / (duration * 1000), 1)
+
+      // Easing function (easeOutExpo)
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress)
+
+      setCount(Math.floor(easeProgress * value))
+
+      if (progress < 1) {
+        frame = window.requestAnimationFrame(step)
+      } else {
+        setCount(value)
       }
-      window.requestAnimationFrame(step)
     }
+
+    frame = window.requestAnimationFrame(step)
+
+    // Stop the loop if the component unmounts mid-animation.
+    return () => window.cancelAnimationFrame(frame)
   }, [isInView, value, duration])
 
   return (

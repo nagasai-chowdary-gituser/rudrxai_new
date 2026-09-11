@@ -1,7 +1,7 @@
 import { retrieveRelevantKnowledge, buildRAGContext } from "./rag"
 
 export interface ChatMessage {
-  role: "user" | "assistant" | "system"
+  role: "user" | "assistant"
   content: string
 }
 
@@ -153,9 +153,14 @@ export async function processMessage(
 
   if (apiKey && apiKey !== "your-groq-api-key") {
     try {
+      // Only the system turn we build here may carry the "system" role — every
+      // turn that came from the browser is forced to user/assistant.
       const messages = [
         { role: "system", content: systemPrompt },
-        ...history.slice(-10).map(m => ({ role: m.role, content: m.content })),
+        ...history.slice(-10).map(m => ({
+          role: m.role === "assistant" ? "assistant" : "user",
+          content: m.content,
+        })),
         { role: "user", content: userMessage },
       ]
 
@@ -168,7 +173,14 @@ export async function processMessage(
           temperature: 0.7,
           max_tokens: 500,
         }),
+        // Never let a hung upstream call hold the request open.
+        signal: AbortSignal.timeout(20_000),
       })
+
+      if (!res.ok) {
+        console.error("Groq API returned", res.status, await res.text())
+        return generateFallbackResponse(userMessage, intent, relevantKnowledge)
+      }
 
       const data = await res.json()
       const text = data?.choices?.[0]?.message?.content
@@ -211,19 +223,19 @@ function generateFallbackResponse(
       "Here's our pricing overview 💰\n\n| Service | Price Range |\n|---------|------------|\n| 🌐 Business Website | ₹3,999 – ₹9,999 |\n| 🤖 AI Chatbot | ₹4,999 – ₹19,999 |\n| 📊 AI Dashboard | ₹2,999 – ₹9,999 |\n| 🎙️ Voice AI Agent | ₹5,999 – ₹29,000 |\n| 🔧 Custom Platform | Custom Quote |\n\n✅ **Fixed-price** — no hidden costs, no hourly billing.\n\n👉 [View Full Pricing](/pricing) or [Get a Free Quote](/contact)",
 
     services:
-      "Here's what we build at **Rudrova Labs** 🚀\n\n• 🌐 **Business Websites** — responsive, fast, SEO-optimized\n• 🤖 **AI Chatbots** — 24/7 customer support automation\n• 📊 **AI Dashboards** — real-time analytics & insights\n• 🎙️ **Voice AI Agents** — automated phone/call handling\n• 🏥 **Healthcare Platforms** — patient portals, telemedicine\n• 🏠 **Real Estate Solutions** — property listings, virtual tours\n• 🛒 **E-Commerce** — online stores with payment integration\n• 📚 **EdTech / LMS** — learning management systems\n• 🔧 **Custom Platforms** — tailored to your business\n\n👉 [Explore Services](/services) or [Get a Quote](/contact)",
+      "Here's what we build at **Rudrova Labs** 🚀\n\n• 🌐 **Business Websites** — responsive, fast, SEO-optimized\n• 🤖 **AI Chatbots** — 24/7 customer support automation\n• 📊 **AI Dashboards** — real-time analytics & insights\n• 🎙️ **Voice AI Agents** — automated phone/call handling\n• 🏥 **Healthcare Platforms** — patient portals, telemedicine\n• 🏠 **Real Estate Solutions** — property listings, virtual tours\n• 🛒 **E-Commerce** — online stores with payment integration\n• 📚 **EdTech / LMS** — learning management systems\n• 🔧 **Custom Platforms** — tailored to your business\n\n👉 [Explore Services](/products) or [Get a Quote](/contact)",
 
     website:
       "We build stunning, production-ready **websites** 🌐\n\n• **Business websites** from ₹3,999\n• Mobile-responsive & SEO-optimized\n• Modern design with smooth animations\n• Fast loading with Next.js / React\n• Custom domains & deployment\n\nEvery website is built from scratch — no templates.\n\n👉 [View Portfolio](/portfolio) | [Get a Quote](/contact)",
 
     chatbot:
-      "Our **AI Chatbots** handle customer support 24/7 🤖\n\n• Automated FAQs & lead capture\n• Multi-language support\n• Integration with WhatsApp, websites, apps\n• Smart escalation to human agents\n• Analytics dashboard included\n\n**Starting at ₹4,999**\n\n👉 [Learn More](/services) | [Get a Quote](/contact)",
+      "Our **AI Chatbots** handle customer support 24/7 🤖\n\n• Automated FAQs & lead capture\n• Multi-language support\n• Integration with WhatsApp, websites, apps\n• Smart escalation to human agents\n• Analytics dashboard included\n\n**Starting at ₹4,999**\n\n👉 [Learn More](/products) | [Get a Quote](/contact)",
 
     dashboard:
       "We create powerful **AI Dashboards** 📊\n\n• Real-time data visualization\n• Custom KPI tracking\n• Revenue, user & growth analytics\n• Export reports as PDF/Excel\n• Role-based access control\n\n**Starting at ₹2,999**\n\n👉 [View Examples](/portfolio) | [Get a Quote](/contact)",
 
     voice_agent:
-      "Our **Voice AI Agents** automate phone interactions 🎙️\n\n• Inbound & outbound call handling\n• Appointment booking by voice\n• Natural language understanding\n• Call recording & analytics\n• Integration with existing phone systems\n\n**Starting at ₹5,999**\n\n👉 [Learn More](/services) | [Get a Quote](/contact)",
+      "Our **Voice AI Agents** automate phone interactions 🎙️\n\n• Inbound & outbound call handling\n• Appointment booking by voice\n• Natural language understanding\n• Call recording & analytics\n• Integration with existing phone systems\n\n**Starting at ₹5,999**\n\n👉 [Learn More](/products) | [Get a Quote](/contact)",
 
     portfolio:
       "Check out our recent work 🏆\n\n• 🏠 **PropertyNest** — AI real estate platform\n• 🏥 **MedConnect** — healthcare management\n• 🛒 **ShopSmart** — e-commerce with AI recommendations\n• 📊 **InsightIQ** — business analytics dashboard\n• 📚 **LearnHub** — EdTech LMS platform\n• 🤖 **SalesBot** — lead generation chatbot\n\n**50+ projects delivered** across 10+ industries.\n\n👉 [View Full Portfolio](/portfolio)",

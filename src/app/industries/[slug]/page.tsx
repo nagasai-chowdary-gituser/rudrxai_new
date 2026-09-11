@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { industries } from "@/data/industries"
 import { Navbar } from "@/components/layout/navbar"
@@ -17,6 +18,27 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 export function generateStaticParams() {
   return industries.map((ind) => ({ slug: ind.id }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const industry = industries.find((i) => i.id === slug)
+
+  if (!industry) return { title: "Industry Not Found" }
+
+  return {
+    title: `${industry.title} AI Solutions`,
+    description: industry.heroDescription,
+    alternates: { canonical: `/industries/${industry.id}` },
+    openGraph: {
+      title: `${industry.title} AI Solutions | Rudrova Labs`,
+      description: industry.heroDescription,
+    },
+  }
 }
 
 export default async function IndustryPage({ params }: { params: Promise<{ slug: string }> }) {

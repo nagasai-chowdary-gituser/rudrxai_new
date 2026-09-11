@@ -22,8 +22,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "React", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "React", logoId: "react" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions and interview videos are processed securely." }
@@ -55,8 +55,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -88,8 +88,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -121,8 +121,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -154,8 +154,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -187,8 +187,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -220,8 +220,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -253,8 +253,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -286,8 +286,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -319,8 +319,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -352,8 +352,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }
@@ -385,8 +385,8 @@ export const products: Product[] = [
     ],
     architectureDescription: "This project leverages modern ML libraries and frameworks, orchestrated together to provide real-time inference and seamless user experiences via robust backend APIs and intuitive frontends.",
     integrations: [
-      { name: "Python", logoId: "aws" },
-      { name: "FastAPI", logoId: "aws" }
+      { name: "Python", logoId: "python" },
+      { name: "FastAPI", logoId: "fastapi" }
     ],
     security: [
       { title: "Data Privacy", description: "All predictions are processed securely." }

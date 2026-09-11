@@ -3,6 +3,14 @@
 import { useState, useRef, useEffect } from "react"
 import { MessageSquare, X, Send, Loader2, Sparkles, ArrowRight, Maximize2, Minimize2 } from "lucide-react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
+
+// Loaded on demand: the markdown renderer only matters once a conversation
+// starts, and this component sits in the root layout on every page.
+const MessageContent = dynamic(
+  () => import("./message-content").then((m) => m.MessageContent),
+  { ssr: false }
+)
 
 interface Message {
   role: "user" | "assistant"
@@ -18,7 +26,6 @@ const quickActions = [
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
   const [isFullScreen, setIsFullScreen] = useState(false)
-  const [sessionId, setSessionId] = useState<string>("")
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -37,14 +44,8 @@ export function ChatWidget() {
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 100)
-
-      // Initialize session if not exists
-      if (!sessionId) {
-        const newSessionId = Math.random().toString(36).substring(7)
-        setSessionId(newSessionId)
-      }
     }
-  }, [isOpen, sessionId])
+  }, [isOpen])
 
   const sendMessage = async () => {
     const trimmed = input.trim()
@@ -60,7 +61,6 @@ export function ChatWidget() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sessionId,
           message: trimmed,
           history: messages.slice(-10),
         }),
@@ -68,10 +68,13 @@ export function ChatWidget() {
 
       const data = await res.json()
 
-      setMessages(prev => [
-        ...prev,
-        { role: "assistant", content: data.message || "Sorry, I couldn't process that. Please try again." }
-      ])
+      // A 429 or 500 arrives as a normal response — without this check the
+      // error body rendered as a blank assistant bubble.
+      const reply = !res.ok
+        ? data.error || "Sorry, something went wrong. Please try again."
+        : data.message || "Sorry, I couldn't process that. Please try again."
+
+      setMessages(prev => [...prev, { role: "assistant", content: reply }])
     } catch {
       setMessages(prev => [
         ...prev,
@@ -87,35 +90,6 @@ export function ChatWidget() {
       e.preventDefault()
       sendMessage()
     }
-  }
-
-  // Parse simple markdown (bold, links)
-  function renderContent(text: string) {
-    // Split by markdown links and bold
-    const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\))/g)
-    return parts.map((part, i) => {
-      // Bold
-      const boldMatch = part.match(/^\*\*(.+)\*\*$/)
-      if (boldMatch) {
-        return <strong key={i} className="font-semibold">{boldMatch[1]}</strong>
-      }
-      // Link
-      const linkMatch = part.match(/^\[(.+)\]\((.+)\)$/)
-      if (linkMatch) {
-        return (
-          <Link key={i} href={linkMatch[2]} className="text-primary underline hover:no-underline" onClick={() => setIsOpen(false)}>
-            {linkMatch[1]}
-          </Link>
-        )
-      }
-      // Plain text — convert newlines
-      return part.split("\n").map((line, j) => (
-        <span key={`${i}-${j}`}>
-          {j > 0 && <br />}
-          {line}
-        </span>
-      ))
-    })
   }
 
   return (
@@ -152,7 +126,7 @@ export function ChatWidget() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className={`fixed z-50 bg-background border-border shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300 transition-all ${isFullScreen
+        <div className={`fixed ${isFullScreen ? "z-[80]" : "z-50"} bg-background border-border shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300 transition-all ${isFullScreen
           ? "inset-0 md:inset-4 md:rounded-2xl border"
           : "bottom-24 right-6 w-[380px] max-w-[calc(100vw-3rem)] h-[560px] max-h-[calc(100vh-8rem)] rounded-2xl border"
           }`}>
@@ -193,7 +167,11 @@ export function ChatWidget() {
                   ? "bg-primary text-primary-foreground rounded-br-md"
                   : "bg-muted text-foreground rounded-bl-md"
                   }`}>
-                  {renderContent(msg.content)}
+                  {msg.role === "assistant" ? (
+                    <MessageContent content={msg.content} onNavigate={() => setIsOpen(false)} />
+                  ) : (
+                    msg.content
+                  )}
                 </div>
               </div>
             ))}

@@ -63,6 +63,7 @@ export interface IndustryData {
     defaultEmployees: number
     defaultHourlyRate: number
     defaultHoursPerWeek: number
+    /** Fraction, not whole percent — 0.40 means a 40% efficiency gain. */
     efficiencyGainPercentage: number
   }
 }

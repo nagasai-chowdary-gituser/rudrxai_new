@@ -36,8 +36,16 @@ export function Hero() {
       >
         {/* ── Background ── */}
         <div className="absolute inset-0 z-0">
-          {/* Video — zoomed out */}
-          <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover scale-[1.15] opacity-0 dark:opacity-45 z-0">
+          {/* Video — dark mode only, so it must not download in light mode */}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="none"
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover scale-[1.15] opacity-0 dark:opacity-45 z-0 hidden dark:block"
+          >
             <source src="/landing_page_video.mp4" type="video/mp4" />
           </video>
           {/* Center aura to mask watermark */}
@@ -85,7 +93,8 @@ export function Hero() {
               </div>
 
               {/* Subtext + CTAs side by side */}
-              <div className={`mt-15 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 transition-all duration-1000 delay-300 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>                <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-md">
+              <div className={`mt-15 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 transition-all duration-1000 delay-300 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-md">
                 From websites and AI chatbots to voice agents and custom platforms — we build production-grade solutions, starting at just <span className="text-foreground font-semibold">₹3,999</span>.
               </p>
 

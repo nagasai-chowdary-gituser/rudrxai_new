@@ -6,7 +6,7 @@ import { Section } from "@/components/layout/section"
 import { FadeIn } from "@/components/effects/fade-in"
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Rudrova Labs",
+  title: "Terms of Service",
   description: "Read the Terms of Service of Rudrova Labs to understand the terms governing your use of our website and services.",
 }
 

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { products } from "@/data/products"
 import { notFound } from "next/navigation"
 import { Navbar } from "@/components/layout/navbar"
@@ -12,11 +13,34 @@ import { ArchitectureDiagram } from "@/components/solutions/ArchitectureDiagram"
 import { InteractiveDemo } from "@/components/solutions/InteractiveDemo"
 import { CheckCircle2, ShieldCheck, FileText, Blocks, Code, MessageSquare, Minus } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export function generateStaticParams() {
   return products.map((p) => ({
     slug: p.id,
   }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const product = products.find((p) => p.id === slug)
+
+  if (!product) return { title: "Product Not Found" }
+
+  return {
+    title: product.title,
+    description: product.tagline,
+    alternates: { canonical: `/products/${product.id}` },
+    openGraph: {
+      title: `${product.title} | Rudrova Labs`,
+      description: product.tagline,
+      images: product.imageUrl ? [product.imageUrl] : undefined,
+    },
+  }
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -53,20 +77,33 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                 </p>
                 <div className="flex flex-wrap gap-4">
                   {product.liveUrl ? (
-                    <a href={product.liveUrl} target="_blank" rel="noreferrer">
-                      <Button size="lg" className="h-12 px-8">View Live Project</Button>
-                    </a>
+                    <Button size="lg" asChild className="h-12 px-8">
+                      <a href={product.liveUrl} target="_blank" rel="noopener noreferrer">
+                        View Live Project
+                      </a>
+                    </Button>
                   ) : (
-                    <Button size="lg" className="h-12 px-8">Request Demo</Button>
+                    <Button size="lg" asChild className="h-12 px-8">
+                      <Link href="/discovery">Request Demo</Link>
+                    </Button>
                   )}
-                  <Button size="lg" variant="outline" className="h-12 px-8">Read Documentation</Button>
+                  <Button size="lg" variant="outline" asChild className="h-12 px-8">
+                    <Link href="/contact">Talk to an Engineer</Link>
+                  </Button>
                 </div>
               </FadeIn>
               
               <FadeIn direction="left">
                 {product.imageUrl ? (
                   <div className="relative w-full aspect-video rounded-2xl overflow-hidden border border-border shadow-2xl">
-                    <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover" />
+                    <Image
+                      src={product.imageUrl}
+                      alt={`${product.title} interface`}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
+                      priority
+                    />
                   </div>
                 ) : (
                   <InteractiveDemo />
@@ -197,19 +234,26 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <div className="lg:col-span-4">
                 <FadeIn direction="left">
                   <div className="bg-surface rounded-2xl p-8 border border-border sticky top-32">
-                    <h3 className="font-heading font-semibold text-xl mb-6">Developer Resources</h3>
+                    <h3 className="font-heading font-semibold text-xl mb-6">Next Steps</h3>
                     <div className="space-y-4">
-                      <Link href="#" className="flex items-center p-3 rounded-lg hover:bg-background transition-colors border border-transparent hover:border-border group">
-                        <Code className="w-5 h-5 text-muted-foreground group-hover:text-primary mr-3" />
-                        <span className="text-sm font-medium">API Documentation</span>
-                      </Link>
-                      <Link href="#" className="flex items-center p-3 rounded-lg hover:bg-background transition-colors border border-transparent hover:border-border group">
+                      {product.liveUrl && (
+                        <a
+                          href={product.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center p-3 rounded-lg hover:bg-background transition-colors border border-transparent hover:border-border group"
+                        >
+                          <Code className="w-5 h-5 text-muted-foreground group-hover:text-primary mr-3" />
+                          <span className="text-sm font-medium">Try the live demo</span>
+                        </a>
+                      )}
+                      <Link href="/discovery" className="flex items-center p-3 rounded-lg hover:bg-background transition-colors border border-transparent hover:border-border group">
                         <FileText className="w-5 h-5 text-muted-foreground group-hover:text-primary mr-3" />
-                        <span className="text-sm font-medium">Integration Guides</span>
+                        <span className="text-sm font-medium">Book a technical walkthrough</span>
                       </Link>
-                      <Link href="#" className="flex items-center p-3 rounded-lg hover:bg-background transition-colors border border-transparent hover:border-border group">
+                      <Link href="/contact" className="flex items-center p-3 rounded-lg hover:bg-background transition-colors border border-transparent hover:border-border group">
                         <MessageSquare className="w-5 h-5 text-muted-foreground group-hover:text-primary mr-3" />
-                        <span className="text-sm font-medium">Community Discord</span>
+                        <span className="text-sm font-medium">Ask us a question</span>
                       </Link>
                     </div>
                   </div>

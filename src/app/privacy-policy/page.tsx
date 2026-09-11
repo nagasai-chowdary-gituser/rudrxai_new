@@ -6,7 +6,7 @@ import { Section } from "@/components/layout/section"
 import { FadeIn } from "@/components/effects/fade-in"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Rudrova Labs",
+  title: "Privacy Policy",
   description: "Read the Privacy Policy of Rudrova Labs to understand how we collect, use, and protect your data.",
 }
 

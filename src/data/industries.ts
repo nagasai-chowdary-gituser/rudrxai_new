@@ -53,7 +53,7 @@ export const industries: IndustryData[] = [
       defaultEmployees: 50,
       defaultHourlyRate: 45,
       defaultHoursPerWeek: 40,
-      efficiencyGainPercentage: 45
+      efficiencyGainPercentage: 0.45
     }
   },
   {
@@ -106,7 +106,7 @@ export const industries: IndustryData[] = [
       defaultEmployees: 100,
       defaultHourlyRate: 65,
       defaultHoursPerWeek: 40,
-      efficiencyGainPercentage: 60
+      efficiencyGainPercentage: 0.6
     }
   },
   {
@@ -160,7 +160,7 @@ export const industries: IndustryData[] = [
       defaultEmployees: 200,
       defaultHourlyRate: 35,
       defaultHoursPerWeek: 40,
-      efficiencyGainPercentage: 40
+      efficiencyGainPercentage: 0.4
     }
   },
   {
@@ -213,7 +213,7 @@ export const industries: IndustryData[] = [
       defaultEmployees: 150,
       defaultHourlyRate: 40,
       defaultHoursPerWeek: 40,
-      efficiencyGainPercentage: 15
+      efficiencyGainPercentage: 0.15
     }
   },
   {
@@ -266,7 +266,7 @@ export const industries: IndustryData[] = [
       defaultEmployees: 300,
       defaultHourlyRate: 25,
       defaultHoursPerWeek: 40,
-      efficiencyGainPercentage: 20
+      efficiencyGainPercentage: 0.2
     }
   }
 ]
@@ -330,7 +330,7 @@ remainingIndustries.forEach(name => {
       defaultEmployees: 80,
       defaultHourlyRate: 40,
       defaultHoursPerWeek: 40,
-      efficiencyGainPercentage: 30
+      efficiencyGainPercentage: 0.3
     }
   })
 })
