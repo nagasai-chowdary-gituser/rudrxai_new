@@ -90,7 +90,7 @@ function StoneDoor({
   children: React.ReactNode
 }) {
   return (
-    <div className="w-full max-w-sm rounded-t-[3rem] border border-[#3b443e]/70 bg-[#0b0f0d]/85 backdrop-blur-sm px-7 pt-10 pb-8 shadow-[0_0_80px_rgba(0,0,0,0.9)]">
+    <div className="w-full max-w-sm rounded-t-[3rem] border border-[#3b443e]/70 bg-[#0b0f0d]/85 backdrop-blur-sm px-7 pt-10 pb-8 shadow-[0_0_80px_rgba(0,0,0,0.9)] pointer-events-auto">
       <p className="text-[0.65rem] uppercase tracking-[0.35em] text-amber-200/45 text-center mb-2">
         {label}
       </p>
@@ -190,9 +190,9 @@ export function DenGate() {
         onSunClick={() => attempt("night", "", "torches")}
       />
 
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-end pb-[12vh] px-6">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-end pb-[12vh] px-6 pointer-events-none">
         {stage === "locked" && (
-          <div className="max-w-md text-center rounded-2xl border border-[#3b443e]/70 bg-[#0b0f0d]/90 p-8">
+          <div className="max-w-md text-center rounded-2xl border border-[#3b443e]/70 bg-[#0b0f0d]/90 p-8 pointer-events-auto">
             <h2 className="text-2xl font-bold text-amber-200 mb-3">The den is sealed</h2>
             <p className="text-amber-100/70 text-sm leading-relaxed">
               Too many failed attempts from this address. Try again in fifteen minutes.
@@ -201,7 +201,7 @@ export function DenGate() {
         )}
 
         {(stage === "daylight" || stage === "torches") && !doorOpen && (
-          <div className="w-full max-w-3xl">
+          <div className="w-full max-w-3xl pointer-events-auto">
             {/* Torches sit either side of the cave mouth, bracketed to the rock */}
             <div className="flex items-end justify-center gap-10 sm:gap-20 md:gap-32">
               <div className="flex items-end gap-6 sm:gap-10">

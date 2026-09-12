@@ -136,7 +136,9 @@ export function ForestScene({
           transform: `scale(${zoom})`,
           // Everything below is painted for night, so daylight is a global
           // brightness and saturation lift rather than a second set of colours.
-          filter: night ? "none" : "brightness(2.05) saturate(1.35) contrast(0.92)",
+          filter: night
+            ? "none"
+            : "brightness(1.62) saturate(0.92) contrast(1.02) hue-rotate(-12deg)",
         }}
       >
         <svg
@@ -173,10 +175,17 @@ export function ForestScene({
             </linearGradient>
 
             <radialGradient id="sunGlow">
-              <stop offset="0%" stopColor="#fffbe8" stopOpacity="1" />
-              <stop offset="14%" stopColor="#ffe89a" stopOpacity="0.72" />
-              <stop offset="42%" stopColor="#ffd166" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#ffce5c" stopOpacity="0" />
+              <stop offset="0%" stopColor="#ffb938" stopOpacity="0.55" />
+              <stop offset="26%" stopColor="#ff9e2c" stopOpacity="0.3" />
+              <stop offset="62%" stopColor="#ff8c21" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="#ff8c21" stopOpacity="0" />
+            </radialGradient>
+
+            {/* The disc itself: saturated enough to survive the daylight lift */}
+            <radialGradient id="sunDisc">
+              <stop offset="0%" stopColor="#fff8dc" />
+              <stop offset="55%" stopColor="#ffd23f" />
+              <stop offset="100%" stopColor="#f59e0b" />
             </radialGradient>
 
             <linearGradient id="sunShaft" x1="0" y1="0" x2="0" y2="1">
@@ -267,18 +276,18 @@ export function ForestScene({
             clipPath="url(#skyClip)"
             style={{ opacity: night ? 1 : 0, transition: "opacity 2000ms ease-in-out" }}
           >
-            <circle cx="1090" cy="118" r="220" fill="url(#moonGlow)" />
-            <circle cx="1090" cy="118" r="30" fill="#f4f9ff" opacity="0.95" />
-            <circle cx="1090" cy="118" r="30" fill="#cfe0ef" opacity="0.35" />
+            <circle cx="1080" cy="170" r="220" fill="url(#moonGlow)" />
+            <circle cx="1080" cy="170" r="30" fill="#f4f9ff" opacity="0.95" />
+            <circle cx="1080" cy="170" r="30" fill="#cfe0ef" opacity="0.35" />
 
             {/* Volumetric shafts angling down from the moon */}
             <g style={{ mixBlendMode: "screen" }} opacity="0.5">
               {[-26, -17, -9, 2, 11].map((angle, index) => (
                 <polygon
                   key={index}
-                  points={`1090,118 ${1040 + index * 26},700 ${1120 + index * 26},700`}
+                  points={`1080,170 ${1040 + index * 26},700 ${1120 + index * 26},700`}
                   fill="url(#shaft)"
-                  transform={`rotate(${angle} 1090 118)`}
+                  transform={`rotate(${angle} 1080 170)`}
                   style={{ filter: "blur(14px)" }}
                 />
               ))}
@@ -295,14 +304,14 @@ export function ForestScene({
               {[-30, -18, -6, 6, 18].map((angle, index) => (
                 <polygon
                   key={index}
-                  points={`1090,118 ${1020 + index * 30},700 ${1130 + index * 30},700`}
+                  points={`1080,170 ${1020 + index * 30},700 ${1130 + index * 30},700`}
                   fill="url(#sunShaft)"
-                  transform={`rotate(${angle} 1090 118)`}
+                  transform={`rotate(${angle} 1080 170)`}
                   style={{ filter: "blur(18px)" }}
                 />
               ))}
             </g>
-            <circle cx="1090" cy="118" r="300" fill="url(#sunGlow)" />
+            <circle cx="1080" cy="170" r="190" fill="url(#sunGlow)" />
             <g
               onClick={night ? undefined : onSunClick}
               style={{
@@ -311,16 +320,32 @@ export function ForestScene({
               }}
             >
               {/* Generous hit area around the disc */}
-              <circle cx="1090" cy="118" r="120" fill="transparent" />
-              <circle cx="1090" cy="118" r="46" fill="#fffdf2" />
-              <circle cx="1090" cy="118" r="62" fill="#ffe9a8" opacity="0.5">
-                <animate
-                  attributeName="r"
-                  values="62;70;62"
-                  dur="4s"
-                  repeatCount="indefinite"
-                />
+              <circle cx="1080" cy="170" r="130" fill="transparent" />
+
+              {/* Pulsing ring — the only motion in a still sky */}
+              <circle
+                cx="1080"
+                cy="170"
+                r="66"
+                fill="none"
+                stroke="#ffb020"
+                strokeWidth="3"
+                opacity="0.55"
+              >
+                <animate attributeName="r" values="62;86;62" dur="3.2s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.6;0;0.6" dur="3.2s" repeatCount="indefinite" />
               </circle>
+
+              <circle cx="1080" cy="170" r="54" fill="url(#sunDisc)" />
+              <circle
+                cx="1080"
+                cy="170"
+                r="54"
+                fill="none"
+                stroke="#e08700"
+                strokeWidth="2.5"
+                opacity="0.75"
+              />
             </g>
           </g>
 
