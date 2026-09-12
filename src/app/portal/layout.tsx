@@ -24,13 +24,15 @@ export default async function PortalLayout({
         {client && (
           <div className="border-b border-border bg-card/50 mb-10">
             <Container>
-              <div className="flex items-center justify-between gap-4 py-4 flex-wrap">
+              <div className="flex items-center justify-between gap-4 py-6 flex-wrap">
                 <div className="min-w-0">
-                  <p className="font-semibold text-foreground truncate">
+                  <p className="font-heading font-bold text-2xl sm:text-3xl text-foreground truncate leading-tight">
                     {client.display_name}
                   </p>
                   {client.company && (
-                    <p className="text-xs text-muted-foreground truncate">{client.company}</p>
+                    <p className="text-base sm:text-lg text-muted-foreground truncate mt-0.5">
+                      {client.company}
+                    </p>
                   )}
                 </div>
 

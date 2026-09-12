@@ -51,7 +51,8 @@ export async function login(
   if (!(await verifyPassword(password, client.password_hash))) return invalid
 
   await createClientSession(client.id)
-  redirect("/portal/projects")
+  // Greet them by name before dropping them into the portal.
+  redirect("/portal/welcome")
 }
 
 export async function logout(): Promise<void> {

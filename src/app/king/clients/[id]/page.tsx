@@ -1,6 +1,12 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getClientById, getReviewForClient, listProjectsForClient } from "@/lib/data"
+import {
+  getClientById,
+  getReviewForClient,
+  getSignedPdfLinks,
+  listProjectsForClient,
+  type PdfLinks,
+} from "@/lib/data"
 import {
   ClientDetailsForm,
   DeleteClientForm,
@@ -25,6 +31,18 @@ export default async function AdminClientPage({
     getReviewForClient(client.id),
   ])
 
+  // Sign every uploaded brief once here, so the panel can open them without
+  // the browser ever touching Supabase directly.
+  const pdfLinks: Record<string, PdfLinks> = {}
+  await Promise.all(
+    projects
+      .filter((project) => project.pdf_path)
+      .map(async (project) => {
+        const links = await getSignedPdfLinks(project.pdf_path!, project.pdf_name)
+        if (links) pdfLinks[project.id] = links
+      })
+  )
+
   return (
     <div className="space-y-6">
       <Link
@@ -44,7 +62,7 @@ export default async function AdminClientPage({
         </p>
       </div>
 
-      <ProjectsSection clientId={client.id} projects={projects} />
+      <ProjectsSection clientId={client.id} projects={projects} pdfLinks={pdfLinks} />
       <ReviewToggle client={client} hasReview={Boolean(review)} />
       <ClientDetailsForm client={client} />
       <CredentialsCard client={client} />

@@ -111,22 +111,37 @@ export async function getProject(id: string): Promise<ProjectRow | null> {
   return (data as ProjectRow) ?? null
 }
 
+export type PdfLinks = { view: string; download: string }
+
 /**
- * Short-lived signed URL for a project PDF. The bucket is private, so this is
- * the only way to read a file — and the link stops working after 5 minutes.
+ * Short-lived signed links for a project PDF. The bucket is private, so these
+ * are the only way to read a file, and they stop working after 5 minutes.
+ *
+ * Two links from one signature: the plain URL renders in the browser's PDF
+ * viewer, and the same URL with ?download= makes the browser save it instead.
  */
-export async function getSignedPdfUrl(path: string): Promise<string | null> {
+export async function getSignedPdfLinks(
+  path: string,
+  filename?: string | null
+): Promise<PdfLinks | null> {
   const supabase = getSupabase()
   const { data, error } = await supabase.storage
     .from(PROJECT_FILES_BUCKET)
     .createSignedUrl(path, 300)
 
-  if (error) {
-    console.error("Failed to sign PDF URL:", error.message)
+  if (error || !data?.signedUrl) {
+    if (error) console.error("Failed to sign PDF URL:", error.message)
     return null
   }
 
-  return data?.signedUrl ?? null
+  const view = data.signedUrl
+  const safeName = (filename || "project.pdf").replace(/[^\w.\- ]+/g, "").slice(0, 120)
+  const separator = view.includes("?") ? "&" : "?"
+
+  return {
+    view,
+    download: `${view}${separator}download=${encodeURIComponent(safeName)}`,
+  }
 }
 
 // ------------------------------------------------------------------ reviews

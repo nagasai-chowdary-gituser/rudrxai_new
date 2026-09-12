@@ -2,8 +2,8 @@ import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
 import { Container } from "@/components/layout/container"
 import { getClientSession } from "@/lib/session"
-import { formatMoney, getProject, getSignedPdfUrl } from "@/lib/data"
-import { ArrowLeft, Download, FileText, RefreshCw, Wallet, Receipt } from "lucide-react"
+import { formatMoney, getProject, getSignedPdfLinks } from "@/lib/data"
+import { ArrowLeft, Download, Eye, FileText, RefreshCw, Wallet, Receipt } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -45,7 +45,9 @@ export default async function PortalProjectPage({
   // client's project by guessing its id.
   if (!project || project.client_id !== clientId) notFound()
 
-  const pdfUrl = project.pdf_path ? await getSignedPdfUrl(project.pdf_path) : null
+  const pdf = project.pdf_path
+    ? await getSignedPdfLinks(project.pdf_path, project.pdf_name)
+    : null
   const balance = project.total_charge - project.advance_paid
   const revisionsLeft = Math.max(0, project.revisions_total - project.revisions_used)
 
@@ -95,26 +97,39 @@ export default async function PortalProjectPage({
             The full scope and deliverables for this project.
           </p>
 
-          {pdfUrl ? (
-            <a
-              href={pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              {project.pdf_name || "Open project PDF"}
-            </a>
+          {pdf ? (
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                <FileText className="w-4 h-4 text-primary shrink-0" />
+                {project.pdf_name || "Project brief.pdf"}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={pdf.view}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
+                >
+                  <Eye className="w-4 h-4" /> View
+                </a>
+                <a
+                  href={pdf.download}
+                  className="inline-flex items-center gap-2 h-11 px-5 rounded-xl border border-border text-foreground font-semibold text-sm hover:bg-muted transition-colors"
+                >
+                  <Download className="w-4 h-4" /> Download
+                </a>
+              </div>
+            </div>
           ) : (
             <p className="text-sm text-muted-foreground flex items-center gap-2">
               <FileText className="w-4 h-4" /> No document has been uploaded yet.
             </p>
           )}
 
-          {pdfUrl && (
+          {pdf && (
             <p className="text-xs text-muted-foreground mt-3">
-              This download link is private to you and expires after a few minutes. Reload
-              the page for a fresh one.
+              These links are private to you and expire after a few minutes. Reload the
+              page for fresh ones.
             </p>
           )}
         </div>

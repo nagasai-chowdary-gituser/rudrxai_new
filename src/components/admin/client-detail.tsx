@@ -12,7 +12,8 @@ import {
 } from "@/app/king/actions"
 import { Field, FormMessage, SubmitButton } from "./form"
 import type { ClientRow, ProjectRow } from "@/lib/supabase"
-import { FileText, Plus, Trash2, KeyRound, Star, Copy, Check } from "lucide-react"
+import type { PdfLinks } from "@/lib/data"
+import { FileText, Plus, Trash2, KeyRound, Star, Copy, Check, Eye, Download } from "lucide-react"
 
 const initial: ActionState = {}
 
@@ -292,9 +293,11 @@ function DeleteProjectForm({ projectId }: { projectId: string }) {
 export function ProjectsSection({
   clientId,
   projects,
+  pdfLinks = {},
 }: {
   clientId: string
   projects: ProjectRow[]
+  pdfLinks?: Record<string, PdfLinks>
 }) {
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<string | null>(null)
@@ -319,6 +322,29 @@ export function ProjectsSection({
                 <span className="text-primary">{editing === project.id ? "Close" : "Edit"}</span>
               </span>
             </button>
+
+            {pdfLinks[project.id] && (
+              <div className="mt-3 pt-3 border-t border-border flex flex-wrap items-center gap-3">
+                <span className="text-xs text-muted-foreground inline-flex items-center gap-1.5 min-w-0">
+                  <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="truncate">{project.pdf_name || "Project brief.pdf"}</span>
+                </span>
+                <a
+                  href={pdfLinks[project.id].view}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors"
+                >
+                  <Eye className="w-3.5 h-3.5" /> View
+                </a>
+                <a
+                  href={pdfLinks[project.id].download}
+                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-muted transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" /> Download
+                </a>
+              </div>
+            )}
 
             {editing === project.id && (
               <div className="mt-5 pt-5 border-t border-border space-y-4">
