@@ -276,18 +276,18 @@ export function ForestScene({
             clipPath="url(#skyClip)"
             style={{ opacity: night ? 1 : 0, transition: "opacity 2000ms ease-in-out" }}
           >
-            <circle cx="1080" cy="170" r="220" fill="url(#haloA)" />
-            <circle cx="1080" cy="170" r="30" fill="#f4f9ff" opacity="0.95" />
-            <circle cx="1080" cy="170" r="30" fill="#cfe0ef" opacity="0.35" />
+            <circle cx="720" cy="170" r="220" fill="url(#haloA)" />
+            <circle cx="720" cy="170" r="30" fill="#f4f9ff" opacity="0.95" />
+            <circle cx="720" cy="170" r="30" fill="#cfe0ef" opacity="0.35" />
 
             {/* Volumetric shafts angling down from the moon */}
             <g style={{ mixBlendMode: "screen" }} opacity="0.5">
               {[-26, -17, -9, 2, 11].map((angle, index) => (
                 <polygon
                   key={index}
-                  points={`1080,170 ${1040 + index * 26},700 ${1120 + index * 26},700`}
+                  points={`720,170 ${680 + index * 26},700 ${760 + index * 26},700`}
                   fill="url(#beamA)"
-                  transform={`rotate(${angle} 1080 170)`}
+                  transform={`rotate(${angle} 720 170)`}
                   style={{ filter: "blur(14px)" }}
                 />
               ))}
@@ -303,14 +303,14 @@ export function ForestScene({
               {[-30, -18, -6, 6, 18].map((angle, index) => (
                 <polygon
                   key={index}
-                  points={`1080,170 ${1020 + index * 30},700 ${1130 + index * 30},700`}
+                  points={`720,170 ${660 + index * 30},700 ${770 + index * 30},700`}
                   fill="url(#beamB)"
-                  transform={`rotate(${angle} 1080 170)`}
+                  transform={`rotate(${angle} 720 170)`}
                   style={{ filter: "blur(18px)" }}
                 />
               ))}
             </g>
-            <circle cx="1080" cy="170" r="190" fill="url(#haloB)" />
+            <circle cx="720" cy="170" r="190" fill="url(#haloB)" />
             <g
               onClick={night ? undefined : onSunClick}
               style={{
@@ -319,11 +319,11 @@ export function ForestScene({
               }}
             >
               {/* Generous hit area around the disc */}
-              <circle cx="1080" cy="170" r="130" fill="transparent" />
+              <circle cx="720" cy="170" r="130" fill="transparent" />
 
               {/* Pulsing ring — the only motion in a still sky */}
               <circle
-                cx="1080"
+                cx="720"
                 cy="170"
                 r="66"
                 fill="none"
@@ -335,9 +335,9 @@ export function ForestScene({
                 <animate attributeName="opacity" values="0.6;0;0.6" dur="3.2s" repeatCount="indefinite" />
               </circle>
 
-              <circle cx="1080" cy="170" r="54" fill="url(#discA)" />
+              <circle cx="720" cy="170" r="54" fill="url(#discA)" />
               <circle
-                cx="1080"
+                cx="720"
                 cy="170"
                 r="54"
                 fill="none"
