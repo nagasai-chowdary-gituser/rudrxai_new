@@ -7,6 +7,14 @@ import { generatePassword, hashPassword } from "@/lib/password"
 import { clearAdminSession, getAdminSession } from "@/lib/session"
 import { logAdminEvent, updateAdminPassword } from "@/lib/admin-auth"
 import { getProject } from "@/lib/data"
+import { DEFAULT_STAGES, MAX_STAGES, MAX_STAGE_LABEL } from "@/lib/stages"
+import {
+  deleteStages,
+  newStageId,
+  readStages,
+  writeStages,
+  type ProjectStage,
+} from "@/lib/stages-store"
 
 /**
  * Admin mutations.
@@ -198,8 +206,10 @@ export async function deleteClient(
   // Remove stored PDFs first — deleting the row cascades, but storage does not.
   const { data: projects } = await supabase
     .from("projects")
-    .select("pdf_path")
+    .select("id, pdf_path")
     .eq("client_id", clientId)
+
+  await deleteStages((projects ?? []).map((project) => project.id))
 
   const paths = (projects ?? [])
     .map((project) => project.pdf_path)
@@ -277,6 +287,18 @@ export async function saveProject(
 
     if (error) return { error: `Could not create project: ${error.message}` }
     targetProjectId = data.id
+
+    // Give every new project the default flow. It is editable afterwards, so
+    // this is a starting point rather than a fixed set.
+    await writeStages(
+      targetProjectId,
+      DEFAULT_STAGES.map((label) => ({
+        id: newStageId(),
+        label,
+        completed: false,
+        completed_at: null,
+      }))
+    )
   }
 
   // Optional PDF upload.
@@ -326,11 +348,85 @@ export async function deleteProject(
     await supabase.storage.from(PROJECT_FILES_BUCKET).remove([project.pdf_path])
   }
 
+  await deleteStages([projectId])
+
   const { error } = await supabase.from("projects").delete().eq("id", projectId)
   if (error) return { error: `Could not delete project: ${error.message}` }
 
   revalidatePath(`/king/clients/${project.client_id}`)
   return { success: "Project deleted." }
+}
+
+// ------------------------------------------------------------------- stages
+
+type IncomingStage = { id?: string; label: string; completed: boolean }
+
+/**
+ * Replace a project's stage list in one go.
+ *
+ * The editor holds the list in the browser — adding, renaming, reordering,
+ * ticking — and submits it whole. Rows keep their id, so a completed_at stamp
+ * survives a rename or a move; anything missing from the submission is dropped.
+ */
+export async function saveStages(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireAdmin()
+
+  const projectId = text(formData, "project_id", 40)
+  const project = await getProject(projectId)
+  if (!project) return { error: "Project not found." }
+
+  let incoming: IncomingStage[]
+  try {
+    const raw = formData.get("stages")
+    incoming = typeof raw === "string" ? JSON.parse(raw) : []
+  } catch {
+    return { error: "Could not read the stage list." }
+  }
+
+  if (!Array.isArray(incoming)) return { error: "Could not read the stage list." }
+  if (incoming.length > MAX_STAGES) {
+    return { error: `A project can have at most ${MAX_STAGES} stages.` }
+  }
+
+  const existing = await readStages(projectId)
+  const existingById = new Map(existing.map((stage) => [stage.id, stage]))
+  const now = new Date().toISOString()
+
+  const next: ProjectStage[] = incoming
+    .map((stage) => ({
+      id: typeof stage.id === "string" && stage.id ? stage.id : undefined,
+      label: String(stage.label ?? "").trim().slice(0, MAX_STAGE_LABEL),
+      completed: Boolean(stage.completed),
+    }))
+    .filter((stage) => stage.label.length > 0)
+    .map((stage) => {
+      const previous = stage.id ? existingById.get(stage.id) : undefined
+
+      // Stamp the moment a stage is first ticked; clear it if it is unticked.
+      const completedAt = !stage.completed
+        ? null
+        : previous?.completed && previous.completed_at
+          ? previous.completed_at
+          : now
+
+      return {
+        id: stage.id ?? newStageId(),
+        label: stage.label,
+        completed: stage.completed,
+        completed_at: completedAt,
+      }
+    })
+
+  const result = await writeStages(projectId, next)
+  if (result.error) return { error: result.error }
+
+  await logAdminEvent("stages_saved", `${projectId}:${next.length}`)
+  revalidatePath(`/king/clients/${project.client_id}`)
+
+  return { success: "Progress saved." }
 }
 
 // ------------------------------------------------------------------ reviews

@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation"
 import { Container } from "@/components/layout/container"
 import { getClientSession } from "@/lib/session"
 import { formatMoney, getProject, getSignedPdfLinks } from "@/lib/data"
+import { readStages } from "@/lib/stages-store"
+import { ProjectTimeline } from "@/components/portal/project-timeline"
 import { ArrowLeft, Download, Eye, FileText, RefreshCw, Wallet, Receipt } from "lucide-react"
 
 export const dynamic = "force-dynamic"
@@ -45,15 +47,16 @@ export default async function PortalProjectPage({
   // client's project by guessing its id.
   if (!project || project.client_id !== clientId) notFound()
 
-  const pdf = project.pdf_path
-    ? await getSignedPdfLinks(project.pdf_path, project.pdf_name)
-    : null
+  const [pdf, stages] = await Promise.all([
+    project.pdf_path ? getSignedPdfLinks(project.pdf_path, project.pdf_name) : null,
+    readStages(project.id),
+  ])
   const balance = project.total_charge - project.advance_paid
   const revisionsLeft = Math.max(0, project.revisions_total - project.revisions_used)
 
   return (
     <Container>
-      <div className="max-w-3xl">
+      <div className="max-w-6xl">
         <Link
           href="/portal/projects"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
@@ -65,73 +68,80 @@ export default async function PortalProjectPage({
           {project.name}
         </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <Stat
-            icon={RefreshCw}
-            label="Revisions"
-            value={`${project.revisions_used} of ${project.revisions_total}`}
-            sub={revisionsLeft === 0 ? "None remaining" : `${revisionsLeft} remaining`}
-          />
-          <Stat
-            icon={Wallet}
-            label="Advance paid"
-            value={formatMoney(project.advance_paid, project.currency)}
-          />
-          <Stat
-            icon={Receipt}
-            label="Total charge"
-            value={formatMoney(project.total_charge, project.currency)}
-            sub={
-              balance > 0
-                ? `${formatMoney(balance, project.currency)} balance due`
-                : "Fully paid"
-            }
-          />
-        </div>
-
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <h2 className="font-heading font-bold text-lg text-foreground mb-1">
-            Project brief
-          </h2>
-          <p className="text-sm text-muted-foreground mb-5">
-            The full scope and deliverables for this project.
-          </p>
-
-          {pdf ? (
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-foreground flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary shrink-0" />
-                {project.pdf_name || "Project brief.pdf"}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Brief, then the money — the order the client asked for */}
+          <div className="lg:col-span-7 space-y-6">
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-heading font-bold text-lg text-foreground mb-1">
+                Project brief
+              </h2>
+              <p className="text-sm text-muted-foreground mb-5">
+                The full scope and deliverables for this project.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href={pdf.view}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
-                >
-                  <Eye className="w-4 h-4" /> View
-                </a>
-                <a
-                  href={pdf.download}
-                  className="inline-flex items-center gap-2 h-11 px-5 rounded-xl border border-border text-foreground font-semibold text-sm hover:bg-muted transition-colors"
-                >
-                  <Download className="w-4 h-4" /> Download
-                </a>
-              </div>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <FileText className="w-4 h-4" /> No document has been uploaded yet.
-            </p>
-          )}
 
-          {pdf && (
-            <p className="text-xs text-muted-foreground mt-3">
-              These links are private to you and expire after a few minutes. Reload the
-              page for fresh ones.
-            </p>
-          )}
+              {pdf ? (
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-primary shrink-0" />
+                    {project.pdf_name || "Project brief.pdf"}
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <a
+                      href={pdf.view}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
+                    >
+                      <Eye className="w-4 h-4" /> View
+                    </a>
+                    <a
+                      href={pdf.download}
+                      className="inline-flex items-center gap-2 h-11 px-5 rounded-xl border border-border text-foreground font-semibold text-sm hover:bg-muted transition-colors"
+                    >
+                      <Download className="w-4 h-4" /> Download
+                    </a>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    These links are private to you and expire after a few minutes.
+                    Reload the page for fresh ones.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground flex items-center gap-2">
+                  <FileText className="w-4 h-4" /> No document has been uploaded yet.
+                </p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Stat
+                icon={Wallet}
+                label="Advance paid"
+                value={formatMoney(project.advance_paid, project.currency)}
+              />
+              <Stat
+                icon={Receipt}
+                label="Total charge"
+                value={formatMoney(project.total_charge, project.currency)}
+                sub={
+                  balance > 0
+                    ? `${formatMoney(balance, project.currency)} balance due`
+                    : "Fully paid"
+                }
+              />
+              <Stat
+                icon={RefreshCw}
+                label="Revisions used"
+                value={`${project.revisions_used} of ${project.revisions_total}`}
+                sub={revisionsLeft === 0 ? "None remaining" : `${revisionsLeft} remaining`}
+              />
+            </div>
+          </div>
+
+          {/* The transparency flow, beside the boxes on a monitor */}
+          <div className="lg:col-span-5 lg:sticky lg:top-28">
+            <ProjectTimeline stages={stages} />
+          </div>
         </div>
       </div>
     </Container>

@@ -13,6 +13,8 @@ import {
 import { Field, FormMessage, SubmitButton } from "./form"
 import type { ClientRow, ProjectRow } from "@/lib/supabase"
 import type { PdfLinks } from "@/lib/data"
+import type { ProjectStage } from "@/lib/stages-store"
+import { StagesEditor } from "./stages-editor"
 import { FileText, Plus, Trash2, KeyRound, Star, Copy, Check, Eye, Download } from "lucide-react"
 
 const initial: ActionState = {}
@@ -294,10 +296,12 @@ export function ProjectsSection({
   clientId,
   projects,
   pdfLinks = {},
+  stages = {},
 }: {
   clientId: string
   projects: ProjectRow[]
   pdfLinks?: Record<string, PdfLinks>
+  stages?: Record<string, ProjectStage[]>
 }) {
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<string | null>(null)
@@ -318,6 +322,12 @@ export function ProjectsSection({
               <span className="font-semibold text-foreground">{project.name}</span>
               <span className="text-xs text-muted-foreground flex items-center gap-3 shrink-0">
                 {project.pdf_path && <FileText className="w-3.5 h-3.5 text-primary" />}
+                {(stages[project.id]?.length ?? 0) > 0 && (
+                  <span className="text-primary font-medium">
+                    {stages[project.id].filter((stage) => stage.completed).length}/
+                    {stages[project.id].length} done
+                  </span>
+                )}
                 {project.revisions_used}/{project.revisions_total} rev
                 <span className="text-primary">{editing === project.id ? "Close" : "Edit"}</span>
               </span>
@@ -347,9 +357,16 @@ export function ProjectsSection({
             )}
 
             {editing === project.id && (
-              <div className="mt-5 pt-5 border-t border-border space-y-4">
+              <div className="mt-5 pt-5 border-t border-border space-y-6">
                 <ProjectForm clientId={clientId} project={project} />
-                <DeleteProjectForm projectId={project.id} />
+
+                <div className="pt-5 border-t border-border">
+                  <StagesEditor projectId={project.id} stages={stages[project.id] ?? []} />
+                </div>
+
+                <div className="pt-2">
+                  <DeleteProjectForm projectId={project.id} />
+                </div>
               </div>
             )}
           </div>
