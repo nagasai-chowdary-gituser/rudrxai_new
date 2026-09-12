@@ -2,7 +2,7 @@ import Link from "next/link"
 import { listClients } from "@/lib/data"
 import { isSupabaseConfigured } from "@/lib/supabase"
 import { CreateClientForm } from "@/components/admin/create-client-form"
-import { ChevronRight, FolderOpen, Star, AlertTriangle } from "lucide-react"
+import { ChevronRight, FolderOpen, Star, AlertTriangle, KeyRound } from "lucide-react"
 
 export default async function AdminClientsPage() {
   if (!isSupabaseConfigured()) {
@@ -55,8 +55,11 @@ export default async function AdminClientsPage() {
                   <span className="text-xs text-muted-foreground">· {client.company}</span>
                 )}
               </div>
-              <div className="text-xs text-muted-foreground mt-1 font-mono">
-                {client.username}
+              <div className="text-xs mt-1 flex items-center gap-1.5">
+                <KeyRound className="w-3 h-3 text-muted-foreground shrink-0" />
+                <span className="font-mono text-foreground/80 select-all">
+                  {client.username}
+                </span>
               </div>
             </div>
 

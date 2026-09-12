@@ -1,7 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import { useFormStatus } from "react-dom"
-import { Loader2 } from "lucide-react"
+import { Loader2, Copy, Check } from "lucide-react"
 import type { ActionState } from "@/app/king/actions"
 
 export function SubmitButton({
@@ -49,15 +50,78 @@ export function FormMessage({ state }: { state: ActionState }) {
         </p>
       )}
       {state.password && (
-        <div className="text-sm rounded-lg px-3 py-2 bg-primary/5 border border-primary/20">
-          <p className="text-muted-foreground mb-1">
-            Password — copy it now, it cannot be shown again:
-          </p>
-          <code className="font-mono font-bold text-foreground select-all break-all">
-            {state.password}
-          </code>
-        </div>
+        <Credentials username={state.username} password={state.password} />
       )}
+    </div>
+  )
+}
+
+/**
+ * Shown once, straight after a password is generated.
+ *
+ * Passwords are stored as scrypt hashes, so this is the only moment the plain
+ * value exists — it cannot be looked up later, only replaced.
+ */
+export function Credentials({
+  username,
+  password,
+}: {
+  username?: string
+  password: string
+}) {
+  const [copied, setCopied] = useState(false)
+
+  const block = username
+    ? `Username: ${username}\nPassword: ${password}`
+    : password
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(block)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard can be blocked; the text is selectable either way.
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-primary/25 bg-primary/5 p-4">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <p className="text-sm font-medium text-foreground">
+          Send these to your client
+        </p>
+        <button
+          type="button"
+          onClick={copy}
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0"
+        >
+          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+          {copied ? "Copied" : "Copy both"}
+        </button>
+      </div>
+
+      <dl className="space-y-2 text-sm">
+        {username && (
+          <div className="flex gap-3">
+            <dt className="w-20 shrink-0 text-muted-foreground">Username</dt>
+            <dd className="font-mono font-semibold text-foreground select-all break-all">
+              {username}
+            </dd>
+          </div>
+        )}
+        <div className="flex gap-3">
+          <dt className="w-20 shrink-0 text-muted-foreground">Password</dt>
+          <dd className="font-mono font-semibold text-foreground select-all break-all">
+            {password}
+          </dd>
+        </div>
+      </dl>
+
+      <p className="text-xs text-muted-foreground mt-3">
+        Copy this now. The password is stored hashed and cannot be shown again —
+        if it is lost, generate a new one.
+      </p>
     </div>
   )
 }

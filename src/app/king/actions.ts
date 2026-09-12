@@ -16,7 +16,13 @@ import { getProject } from "@/lib/data"
  * must never rely on the caller having come from a protected page.
  */
 
-export type ActionState = { error?: string; success?: string; password?: string }
+export type ActionState = {
+  error?: string
+  success?: string
+  /** Returned once after a create or reset so the pair can be copied. */
+  username?: string
+  password?: string
+}
 
 async function requireAdmin() {
   if (!(await getAdminSession())) {
@@ -86,7 +92,7 @@ export async function createClient(
   revalidatePath("/king")
 
   // Returned once so it can be copied — it is never recoverable afterwards.
-  return { success: `Client "${displayName}" created.`, password }
+  return { success: `Client "${displayName}" created.`, username, password }
 }
 
 export async function resetClientPassword(
@@ -102,6 +108,12 @@ export async function resetClientPassword(
   if (password.length < 8) return { error: "Password must be at least 8 characters." }
 
   const supabase = getSupabase()
+  const { data: client } = await supabase
+    .from("clients")
+    .select("username")
+    .eq("id", clientId)
+    .maybeSingle()
+
   const { error } = await supabase
     .from("clients")
     .update({ password_hash: await hashPassword(password) })
@@ -112,7 +124,11 @@ export async function resetClientPassword(
   await logAdminEvent("client_password_reset", clientId)
   revalidatePath(`/king/clients/${clientId}`)
 
-  return { success: "Password reset.", password }
+  return {
+    success: "New password set. The old one no longer works.",
+    username: client?.username,
+    password,
+  }
 }
 
 export async function updateClient(

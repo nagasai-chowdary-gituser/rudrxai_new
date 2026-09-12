@@ -5,7 +5,7 @@ import {
   ClientDetailsForm,
   DeleteClientForm,
   ProjectsSection,
-  ResetPasswordForm,
+  CredentialsCard,
   ReviewToggle,
 } from "@/components/admin/client-detail"
 import { ArrowLeft } from "lucide-react"
@@ -47,7 +47,7 @@ export default async function AdminClientPage({
       <ProjectsSection clientId={client.id} projects={projects} />
       <ReviewToggle client={client} hasReview={Boolean(review)} />
       <ClientDetailsForm client={client} />
-      <ResetPasswordForm clientId={client.id} />
+      <CredentialsCard client={client} />
       <DeleteClientForm clientId={client.id} name={client.display_name} />
     </div>
   )

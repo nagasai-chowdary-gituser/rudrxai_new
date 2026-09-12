@@ -12,7 +12,7 @@ import {
 } from "@/app/king/actions"
 import { Field, FormMessage, SubmitButton } from "./form"
 import type { ClientRow, ProjectRow } from "@/lib/supabase"
-import { FileText, Plus, Trash2, KeyRound, Star } from "lucide-react"
+import { FileText, Plus, Trash2, KeyRound, Star, Copy, Check } from "lucide-react"
 
 const initial: ActionState = {}
 
@@ -58,25 +58,70 @@ export function ClientDetailsForm({ client }: { client: ClientRow }) {
 
 // ----------------------------------------------------------------- password
 
-export function ResetPasswordForm({ clientId }: { clientId: string }) {
+export function CredentialsCard({ client }: { client: ClientRow }) {
   const [state, action] = useActionState(resetClientPassword, initial)
+  const [copied, setCopied] = useState(false)
+
+  const copyUsername = async () => {
+    try {
+      await navigator.clipboard.writeText(client.username)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard can be blocked; the value is selectable either way.
+    }
+  }
 
   return (
     <Card
       title="Sign-in credentials"
-      description="There is no email on file, so password resets happen here."
+      description="What this client types at /portal. There is no email on file, so password changes happen here."
     >
+      {/* Username — the half that can always be shown */}
+      <div className="rounded-lg border border-border bg-background p-4 mb-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
+              Username
+            </p>
+            <p className="font-mono font-semibold text-foreground break-all select-all">
+              {client.username}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={copyUsername}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline shrink-0"
+          >
+            {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-border">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
+            Password
+          </p>
+          <p className="font-mono text-muted-foreground">••••••••••••</p>
+          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+            Stored as a one-way hash, so it cannot be read back — not by this
+            panel and not by anyone who steals the database. If the client has
+            lost it, set a new one below and send them the pair.
+          </p>
+        </div>
+      </div>
+
       <form action={action} className="space-y-4">
-        <input type="hidden" name="client_id" value={clientId} />
+        <input type="hidden" name="client_id" value={client.id} />
         <Field
-          label="New password"
+          label="Set a new password"
           name="password"
-          placeholder="Leave blank to generate one"
-          hint="Minimum 8 characters. Shown once after saving."
+          placeholder="Leave blank to generate a strong one"
+          hint="Minimum 8 characters. Shown once, immediately after saving."
         />
         <FormMessage state={state} />
         <SubmitButton variant="outline">
-          <KeyRound className="w-4 h-4" /> Reset password
+          <KeyRound className="w-4 h-4" /> Set new password
         </SubmitButton>
       </form>
     </Card>
