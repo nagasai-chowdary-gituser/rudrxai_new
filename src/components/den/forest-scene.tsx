@@ -103,9 +103,14 @@ function TreeLayer({
 export function ForestScene({
   depth = 0,
   doorOpen = false,
+  night = true,
+  onSunClick,
 }: {
   depth?: 0 | 1 | 2 | 3
   doorOpen?: boolean
+  /** Daylight until the sun is put down. */
+  night?: boolean
+  onSunClick?: () => void
 }) {
   // The camera pushes into the cave mouth as the doors are cleared. Transform
   // and opacity only — both run on the compositor, so this stays smooth on a
@@ -121,10 +126,18 @@ export function ForestScene({
   const near = makeTrees(211, 7, 1700, 470, 140)
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-[#03080a]" aria-hidden="true">
+    <div
+      className="absolute inset-0 overflow-hidden bg-[#03080a] pointer-events-none"
+      aria-hidden={night ? "true" : undefined}
+    >
       <div
-        className="absolute inset-0 origin-[50%_76%] transition-transform duration-[1600ms] ease-[cubic-bezier(0.55,0,0.3,1)] will-change-transform"
-        style={{ transform: `scale(${zoom})` }}
+        className="absolute inset-0 origin-[50%_76%] transition-[transform,filter] duration-[1600ms] ease-[cubic-bezier(0.55,0,0.3,1)] will-change-transform"
+        style={{
+          transform: `scale(${zoom})`,
+          // Everything below is painted for night, so daylight is a global
+          // brightness and saturation lift rather than a second set of colours.
+          filter: night ? "none" : "brightness(2.05) saturate(1.35) contrast(0.92)",
+        }}
       >
         <svg
           viewBox="0 0 1400 700"
@@ -149,6 +162,26 @@ export function ForestScene({
             <linearGradient id="groundMist" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#23505c" stopOpacity="0.38" />
               <stop offset="100%" stopColor="#23505c" stopOpacity="0" />
+            </linearGradient>
+
+            {/* Daylight sky, crossfaded over the night one */}
+            <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3f8fd0" />
+              <stop offset="45%" stopColor="#7cbbe4" />
+              <stop offset="78%" stopColor="#bcdcf0" />
+              <stop offset="100%" stopColor="#e4eedd" />
+            </linearGradient>
+
+            <radialGradient id="sunGlow">
+              <stop offset="0%" stopColor="#fffbe8" stopOpacity="1" />
+              <stop offset="14%" stopColor="#ffe89a" stopOpacity="0.72" />
+              <stop offset="42%" stopColor="#ffd166" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#ffce5c" stopOpacity="0" />
+            </radialGradient>
+
+            <linearGradient id="sunShaft" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fff6d5" stopOpacity="0.34" />
+              <stop offset="100%" stopColor="#fff6d5" stopOpacity="0" />
             </linearGradient>
 
             <radialGradient id="moonGlow">
@@ -221,8 +254,19 @@ export function ForestScene({
 
           <rect width="1400" height="700" fill="url(#sky)" />
 
+          {/* Daylight sky sits on top and fades away when the sun goes down */}
+          <rect
+            width="1400"
+            height="700"
+            fill="url(#skyDay)"
+            style={{ opacity: night ? 0 : 1, transition: "opacity 2000ms ease-in-out" }}
+          />
+
           {/* Moon and its scattering halo */}
-          <g clipPath="url(#skyClip)">
+          <g
+            clipPath="url(#skyClip)"
+            style={{ opacity: night ? 1 : 0, transition: "opacity 2000ms ease-in-out" }}
+          >
             <circle cx="1090" cy="118" r="220" fill="url(#moonGlow)" />
             <circle cx="1090" cy="118" r="30" fill="#f4f9ff" opacity="0.95" />
             <circle cx="1090" cy="118" r="30" fill="#cfe0ef" opacity="0.35" />
@@ -238,6 +282,45 @@ export function ForestScene({
                   style={{ filter: "blur(14px)" }}
                 />
               ))}
+            </g>
+          </g>
+
+          {/* The sun. Clicking it brings the night — the only thing on this
+              screen that does anything while it is still up. */}
+          <g
+            clipPath="url(#skyClip)"
+            style={{ opacity: night ? 0 : 1, transition: "opacity 1400ms ease-in-out" }}
+          >
+            <g style={{ mixBlendMode: "screen" }} opacity="0.75">
+              {[-30, -18, -6, 6, 18].map((angle, index) => (
+                <polygon
+                  key={index}
+                  points={`1090,118 ${1020 + index * 30},700 ${1130 + index * 30},700`}
+                  fill="url(#sunShaft)"
+                  transform={`rotate(${angle} 1090 118)`}
+                  style={{ filter: "blur(18px)" }}
+                />
+              ))}
+            </g>
+            <circle cx="1090" cy="118" r="300" fill="url(#sunGlow)" />
+            <g
+              onClick={night ? undefined : onSunClick}
+              style={{
+                cursor: night ? "default" : "pointer",
+                pointerEvents: night ? "none" : "auto",
+              }}
+            >
+              {/* Generous hit area around the disc */}
+              <circle cx="1090" cy="118" r="120" fill="transparent" />
+              <circle cx="1090" cy="118" r="46" fill="#fffdf2" />
+              <circle cx="1090" cy="118" r="62" fill="#ffe9a8" opacity="0.5">
+                <animate
+                  attributeName="r"
+                  values="62;70;62"
+                  dur="4s"
+                  repeatCount="indefinite"
+                />
+              </circle>
             </g>
           </g>
 
@@ -338,8 +421,9 @@ export function ForestScene({
 
       {/* Film grain — one small tiling noise texture, not a full-screen filter */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.16] mix-blend-overlay"
+        className="absolute inset-0 pointer-events-none mix-blend-overlay transition-opacity duration-[1600ms]"
         style={{
+          opacity: night ? 0.16 : 0.06,
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")",
         }}
@@ -347,8 +431,9 @@ export function ForestScene({
 
       {/* Vignette */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none transition-opacity duration-[1600ms]"
         style={{
+          opacity: night ? 1 : 0.3,
           background:
             "radial-gradient(ellipse 82% 72% at 50% 58%, transparent 42%, rgba(0,0,0,0.34) 78%, rgba(0,0,0,0.62) 100%)",
         }}
@@ -358,7 +443,7 @@ export function ForestScene({
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-[1600ms]"
         style={{
-          opacity: warmth,
+          opacity: night ? warmth : 0,
           background:
             "radial-gradient(ellipse 70% 60% at 50% 72%, rgba(255,180,94,0.55) 0%, rgba(214,122,32,0.3) 38%, rgba(90,44,10,0.12) 70%, transparent 100%)",
           mixBlendMode: "screen",

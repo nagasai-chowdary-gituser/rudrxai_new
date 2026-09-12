@@ -37,13 +37,16 @@ export const dynamic = "force-dynamic"
  * crafting requests by hand.
  */
 
-type Step = "knock1" | "knock2" | "color" | "username" | "password" | "pattern"
+type Step = "knock1" | "knock2" | "night" | "color" | "username" | "password" | "pattern"
 
+// The sun must be put down before any torch is touched. Enforced here rather
+// than in the UI, so the order cannot be skipped by crafting a request.
 const GATE_ORDER: Record<string, number> = {
-  color: 0,
-  username: 1,
-  password: 2,
-  pattern: 3,
+  night: 0,
+  color: 1,
+  username: 2,
+  password: 3,
+  pattern: 4,
 }
 
 function tapsRequired(name: "KNOCK_FOOTER_TAPS" | "KNOCK_AGAIN_TAPS"): number {
@@ -106,7 +109,12 @@ export async function POST(request: Request) {
 
     let passed = false
 
-    if (step === "color") {
+    if (step === "night") {
+      // Nothing secret to check: this step exists to fix the order. Touching a
+      // torch first arrives here as an out-of-order "color" and is refused
+      // above, which is what sends the visitor to the flash screen.
+      passed = true
+    } else if (step === "color") {
       passed = typeof body.value === "string" && (await checkGateColor(body.value))
     } else if (step === "username") {
       passed = typeof body.value === "string" && (await checkAdminUsername(body.value))

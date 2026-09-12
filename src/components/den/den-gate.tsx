@@ -14,7 +14,7 @@ import { ForestScene } from "./forest-scene"
  * footer — not back one step.
  */
 
-type Stage = "torches" | "username" | "password" | "pattern" | "rejected" | "locked"
+type Stage = "daylight" | "torches" | "username" | "password" | "pattern" | "rejected" | "locked"
 
 const TORCHES = [
   { name: "red", lit: "#ef4444", glow: "rgba(239,68,68,0.55)" },
@@ -24,20 +24,28 @@ const TORCHES = [
 ]
 
 const DEPTH: Record<string, 0 | 1 | 2 | 3> = {
+  daylight: 0,
   torches: 0,
   username: 1,
   password: 2,
   pattern: 3,
 }
 
-/** A torch bracketed to the rock beside the cave mouth. */
+/**
+ * A torch bracketed to the rock beside the cave mouth.
+ *
+ * While the sun is up the flame is out — but the button still works, and
+ * pressing it sends an out-of-order request that the server refuses.
+ */
 function Torch({
   color,
   disabled,
+  lit,
   onClick,
 }: {
   color: (typeof TORCHES)[number]
   disabled: boolean
+  lit: boolean
   onClick: () => void
 }) {
   return (
@@ -50,15 +58,19 @@ function Torch({
     >
       {/* Flame */}
       <span
-        className="block w-7 h-10 rounded-full blur-[3px] animate-pulse"
+        className={`block w-7 h-10 rounded-full blur-[3px] transition-opacity duration-1000 ${
+          lit ? "animate-pulse opacity-100" : "opacity-25"
+        }`}
         style={{
-          background: `radial-gradient(ellipse at 50% 70%, ${color.lit} 0%, ${color.glow} 55%, transparent 75%)`,
+          background: lit
+            ? `radial-gradient(ellipse at 50% 70%, ${color.lit} 0%, ${color.glow} 55%, transparent 75%)`
+            : `radial-gradient(ellipse at 50% 70%, ${color.lit} 0%, transparent 70%)`,
         }}
       />
       {/* Halo on the rock behind it */}
       <span
-        className="absolute -top-3 w-20 h-20 rounded-full blur-2xl opacity-60 group-hover:opacity-100 transition-opacity pointer-events-none"
-        style={{ background: color.glow }}
+        className="absolute -top-3 w-20 h-20 rounded-full blur-2xl transition-opacity duration-1000 pointer-events-none"
+        style={{ background: color.glow, opacity: lit ? 0.6 : 0 }}
       />
       {/* Sconce */}
       <span className="block w-3 h-12 rounded-sm bg-gradient-to-b from-[#4b3a2a] to-[#241b14]" />
@@ -90,7 +102,8 @@ function StoneDoor({
 
 export function DenGate() {
   const router = useRouter()
-  const [stage, setStage] = useState<Stage>("torches")
+  const [stage, setStage] = useState<Stage>("daylight")
+  const [night, setNight] = useState(false)
   const [busy, setBusy] = useState(false)
   const [doorOpen, setDoorOpen] = useState(false)
   const [username, setUsername] = useState("")
@@ -133,6 +146,13 @@ export function DenGate() {
       setUsername("")
       setPassword("")
 
+      if (step === "night") {
+        // Let the sky finish turning before the torches become usable.
+        setNight(true)
+        setTimeout(() => setStage(next), 1500)
+        return
+      }
+
       if (step === "color") {
         // Let the door finish swinging before the camera moves through it.
         setDoorOpen(true)
@@ -163,7 +183,12 @@ export function DenGate() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <ForestScene depth={depth} doorOpen={doorOpen} />
+      <ForestScene
+        depth={depth}
+        doorOpen={doorOpen}
+        night={night}
+        onSunClick={() => attempt("night", "", "torches")}
+      />
 
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-end pb-[12vh] px-6">
         {stage === "locked" && (
@@ -175,7 +200,7 @@ export function DenGate() {
           </div>
         )}
 
-        {stage === "torches" && !doorOpen && (
+        {(stage === "daylight" || stage === "torches") && !doorOpen && (
           <div className="w-full max-w-3xl">
             {/* Torches sit either side of the cave mouth, bracketed to the rock */}
             <div className="flex items-end justify-center gap-10 sm:gap-20 md:gap-32">
@@ -185,6 +210,7 @@ export function DenGate() {
                     key={color.name}
                     color={color}
                     disabled={busy}
+                    lit={night}
                     onClick={() => attempt("color", color.name, "username")}
                   />
                 ))}
@@ -195,14 +221,19 @@ export function DenGate() {
                     key={color.name}
                     color={color}
                     disabled={busy}
+                    lit={night}
                     onClick={() => attempt("color", color.name, "username")}
                   />
                 ))}
               </div>
             </div>
 
-            <p className="text-center text-[0.65rem] uppercase tracking-[0.35em] text-amber-200/35 mt-10">
-              One torch opens the stone
+            <p
+              className={`text-center text-[0.65rem] uppercase tracking-[0.35em] mt-10 transition-colors duration-1000 ${
+                night ? "text-amber-200/35" : "text-slate-900/45"
+              }`}
+            >
+              {night ? "One torch opens the stone" : "Nothing stirs while the sun is up"}
             </p>
           </div>
         )}
