@@ -391,7 +391,7 @@ export async function saveStages(
     return { error: `A project can have at most ${MAX_STAGES} stages.` }
   }
 
-  const existing = await readStages(projectId)
+  const existing = (await readStages(projectId)) ?? []
   const existingById = new Map(existing.map((stage) => [stage.id, stage]))
   const now = new Date().toISOString()
 

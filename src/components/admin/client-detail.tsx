@@ -15,9 +15,18 @@ import type { ClientRow, ProjectRow } from "@/lib/supabase"
 import type { PdfLinks } from "@/lib/data"
 import type { ProjectStage } from "@/lib/stages-store"
 import { StagesEditor } from "./stages-editor"
-import { FileText, Plus, Trash2, KeyRound, Star, Copy, Check, Eye, Download } from "lucide-react"
+import {
+  FileText, Plus, Trash2, KeyRound, Star, Copy, Check, Eye, Download, ListChecks,
+} from "lucide-react"
 
 const initial: ActionState = {}
+
+/** "0/6" once configured, or a nudge when the flow has never been saved. */
+function stageCount(stages: ProjectStage[] | null | undefined): string {
+  if (!stages) return "Set up"
+  if (stages.length === 0) return "0/0"
+  return `${stages.filter((stage) => stage.completed).length}/${stages.length}`
+}
 
 function Card({
   title,
@@ -301,10 +310,11 @@ export function ProjectsSection({
   clientId: string
   projects: ProjectRow[]
   pdfLinks?: Record<string, PdfLinks>
-  stages?: Record<string, ProjectStage[]>
+  stages?: Record<string, ProjectStage[] | null>
 }) {
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<string | null>(null)
+  const [progress, setProgress] = useState<string | null>(null)
 
   return (
     <Card
@@ -314,24 +324,46 @@ export function ProjectsSection({
       <div className="space-y-4">
         {projects.map((project) => (
           <div key={project.id} className="rounded-xl border border-border p-4">
-            <button
-              type="button"
-              onClick={() => setEditing(editing === project.id ? null : project.id)}
-              className="w-full flex items-center justify-between gap-3 text-left"
-            >
-              <span className="font-semibold text-foreground">{project.name}</span>
-              <span className="text-xs text-muted-foreground flex items-center gap-3 shrink-0">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              {/* The name stays clickable — it is the first thing anyone tries. */}
+              <button
+                type="button"
+                onClick={() => setEditing(editing === project.id ? null : project.id)}
+                className="font-semibold text-foreground text-left hover:text-primary transition-colors"
+              >
+                {project.name}
+              </button>
+
+              <div className="flex items-center gap-2 text-xs shrink-0">
                 {project.pdf_path && <FileText className="w-3.5 h-3.5 text-primary" />}
-                {(stages[project.id]?.length ?? 0) > 0 && (
-                  <span className="text-primary font-medium">
-                    {stages[project.id].filter((stage) => stage.completed).length}/
-                    {stages[project.id].length} done
-                  </span>
-                )}
-                {project.revisions_used}/{project.revisions_total} rev
-                <span className="text-primary">{editing === project.id ? "Close" : "Edit"}</span>
-              </span>
-            </button>
+                <span className="text-muted-foreground">
+                  {project.revisions_used}/{project.revisions_total} rev
+                </span>
+
+                {/* Progress is its own control: it is the thing edited most
+                    often, and it was invisible when buried inside Edit. */}
+                <button
+                  type="button"
+                  onClick={() => setProgress(progress === project.id ? null : project.id)}
+                  className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border text-xs font-semibold transition-colors ${
+                    progress === project.id
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-border text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <ListChecks className="w-3.5 h-3.5" />
+                  {stageCount(stages[project.id])} progress
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setEditing(editing === project.id ? null : project.id)}
+                  className="inline-flex items-center h-8 px-3 rounded-lg border border-border text-xs font-semibold text-foreground hover:bg-muted transition-colors"
+                >
+                  {editing === project.id ? "Close" : "Edit"}
+                </button>
+              </div>
+            </div>
 
             {pdfLinks[project.id] && (
               <div className="mt-3 pt-3 border-t border-border flex flex-wrap items-center gap-3">
@@ -356,13 +388,18 @@ export function ProjectsSection({
               </div>
             )}
 
+            {progress === project.id && (
+              <div className="mt-5 pt-5 border-t border-border">
+                <StagesEditor
+                  projectId={project.id}
+                  stages={stages[project.id] ?? null}
+                />
+              </div>
+            )}
+
             {editing === project.id && (
               <div className="mt-5 pt-5 border-t border-border space-y-6">
                 <ProjectForm clientId={clientId} project={project} />
-
-                <div className="pt-5 border-t border-border">
-                  <StagesEditor projectId={project.id} stages={stages[project.id] ?? []} />
-                </div>
 
                 <div className="pt-2">
                   <DeleteProjectForm projectId={project.id} />

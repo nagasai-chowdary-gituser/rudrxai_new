@@ -41,7 +41,11 @@ function parseStages(raw: unknown): ProjectStage[] {
     .slice(0, MAX_STAGES)
 }
 
-export async function readStages(projectId: string): Promise<ProjectStage[]> {
+/**
+ * Returns null when a project has never had its stages saved, so callers can
+ * tell that apart from an admin who deliberately cleared the list.
+ */
+export async function readStages(projectId: string): Promise<ProjectStage[] | null> {
   const supabase = getSupabase()
 
   const { data, error } = await supabase.storage
@@ -49,29 +53,37 @@ export async function readStages(projectId: string): Promise<ProjectStage[]> {
     .download(stagePath(projectId))
 
   // A project that has never been saved simply has no file yet.
-  if (error || !data) return []
+  if (error || !data) return null
 
   try {
     return parseStages(JSON.parse(await data.text()))
   } catch {
     console.error("Stage file for", projectId, "is not valid JSON")
-    return []
+    return null
   }
 }
 
 /** Stages for several projects at once, keyed by project id. */
 export async function readStagesForProjects(
   projectIds: string[]
-): Promise<Record<string, ProjectStage[]>> {
+): Promise<Record<string, ProjectStage[] | null>> {
   const entries = await Promise.all(
     projectIds.map(async (id) => [id, await readStages(id)] as const)
   )
 
-  const grouped: Record<string, ProjectStage[]> = {}
-  for (const [id, stages] of entries) {
-    if (stages.length > 0) grouped[id] = stages
-  }
+  const grouped: Record<string, ProjectStage[] | null> = {}
+  for (const [id, stages] of entries) grouped[id] = stages
   return grouped
+}
+
+/** The default flow, as unsaved stages — what a project shows before setup. */
+export function defaultStages(labels: readonly string[]): ProjectStage[] {
+  return labels.map((label, index) => ({
+    id: `default-${index}`,
+    label,
+    completed: false,
+    completed_at: null,
+  }))
 }
 
 export async function writeStages(

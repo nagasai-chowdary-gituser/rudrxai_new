@@ -22,16 +22,16 @@ export function StagesEditor({
   stages,
 }: {
   projectId: string
-  stages: ProjectStage[]
+  stages: ProjectStage[] | null
 }) {
   const [state, action] = useActionState(saveStages, initial)
   // A project created before this feature existed has no stages. Offer the
   // default flow as an unsaved draft so one click sets it up.
-  const untouched = stages.length === 0
+  const untouched = stages === null || stages.length === 0
   const [draft, setDraft] = useState<Draft[]>(() =>
     untouched
       ? DEFAULT_STAGES.map((label) => ({ label, completed: false }))
-      : stages.map((stage) => ({
+      : (stages ?? []).map((stage) => ({
           id: stage.id,
           label: stage.label,
           completed: stage.completed,
