@@ -233,7 +233,7 @@ export function DenGate() {
                 night ? "text-amber-200/35" : "text-slate-900/45"
               }`}
             >
-              {night ? "One torch opens the stone" : "Nothing stirs while the sun is up"}
+              One torch opens the stone
             </p>
           </div>
         )}

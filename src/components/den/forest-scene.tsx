@@ -166,41 +166,41 @@ export function ForestScene({
               <stop offset="100%" stopColor="#23505c" stopOpacity="0" />
             </linearGradient>
 
-            {/* Daylight sky, crossfaded over the night one */}
-            <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1">
+            {/* Second sky layer, crossfaded over the first */}
+            <linearGradient id="skyB" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#3f8fd0" />
               <stop offset="45%" stopColor="#7cbbe4" />
               <stop offset="78%" stopColor="#bcdcf0" />
               <stop offset="100%" stopColor="#e4eedd" />
             </linearGradient>
 
-            <radialGradient id="sunGlow">
+            <radialGradient id="haloB">
               <stop offset="0%" stopColor="#ffb938" stopOpacity="0.55" />
               <stop offset="26%" stopColor="#ff9e2c" stopOpacity="0.3" />
               <stop offset="62%" stopColor="#ff8c21" stopOpacity="0.1" />
               <stop offset="100%" stopColor="#ff8c21" stopOpacity="0" />
             </radialGradient>
 
-            {/* The disc itself: saturated enough to survive the daylight lift */}
-            <radialGradient id="sunDisc">
+            {/* Disc fill: saturated enough to survive the brightness lift */}
+            <radialGradient id="discA">
               <stop offset="0%" stopColor="#fff8dc" />
               <stop offset="55%" stopColor="#ffd23f" />
               <stop offset="100%" stopColor="#f59e0b" />
             </radialGradient>
 
-            <linearGradient id="sunShaft" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="beamB" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#fff6d5" stopOpacity="0.34" />
               <stop offset="100%" stopColor="#fff6d5" stopOpacity="0" />
             </linearGradient>
 
-            <radialGradient id="moonGlow">
+            <radialGradient id="haloA">
               <stop offset="0%" stopColor="#dfeeff" stopOpacity="0.85" />
               <stop offset="22%" stopColor="#9dc3dd" stopOpacity="0.24" />
               <stop offset="60%" stopColor="#6f9ab5" stopOpacity="0.07" />
               <stop offset="100%" stopColor="#6f9ab5" stopOpacity="0" />
             </radialGradient>
 
-            <linearGradient id="shaft" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id="beamA" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#cfe6f7" stopOpacity="0.2" />
               <stop offset="100%" stopColor="#cfe6f7" stopOpacity="0" />
             </linearGradient>
@@ -263,11 +263,11 @@ export function ForestScene({
 
           <rect width="1400" height="700" fill="url(#sky)" />
 
-          {/* Daylight sky sits on top and fades away when the sun goes down */}
+          {/* Second layer sits on top and fades away once cleared */}
           <rect
             width="1400"
             height="700"
-            fill="url(#skyDay)"
+            fill="url(#skyB)"
             style={{ opacity: night ? 0 : 1, transition: "opacity 2000ms ease-in-out" }}
           />
 
@@ -276,7 +276,7 @@ export function ForestScene({
             clipPath="url(#skyClip)"
             style={{ opacity: night ? 1 : 0, transition: "opacity 2000ms ease-in-out" }}
           >
-            <circle cx="1080" cy="170" r="220" fill="url(#moonGlow)" />
+            <circle cx="1080" cy="170" r="220" fill="url(#haloA)" />
             <circle cx="1080" cy="170" r="30" fill="#f4f9ff" opacity="0.95" />
             <circle cx="1080" cy="170" r="30" fill="#cfe0ef" opacity="0.35" />
 
@@ -286,7 +286,7 @@ export function ForestScene({
                 <polygon
                   key={index}
                   points={`1080,170 ${1040 + index * 26},700 ${1120 + index * 26},700`}
-                  fill="url(#shaft)"
+                  fill="url(#beamA)"
                   transform={`rotate(${angle} 1080 170)`}
                   style={{ filter: "blur(14px)" }}
                 />
@@ -294,8 +294,7 @@ export function ForestScene({
             </g>
           </g>
 
-          {/* The sun. Clicking it brings the night — the only thing on this
-              screen that does anything while it is still up. */}
+          {/* The only element on this screen that responds before the torches. */}
           <g
             clipPath="url(#skyClip)"
             style={{ opacity: night ? 0 : 1, transition: "opacity 1400ms ease-in-out" }}
@@ -305,13 +304,13 @@ export function ForestScene({
                 <polygon
                   key={index}
                   points={`1080,170 ${1020 + index * 30},700 ${1130 + index * 30},700`}
-                  fill="url(#sunShaft)"
+                  fill="url(#beamB)"
                   transform={`rotate(${angle} 1080 170)`}
                   style={{ filter: "blur(18px)" }}
                 />
               ))}
             </g>
-            <circle cx="1080" cy="170" r="190" fill="url(#sunGlow)" />
+            <circle cx="1080" cy="170" r="190" fill="url(#haloB)" />
             <g
               onClick={night ? undefined : onSunClick}
               style={{
@@ -336,7 +335,7 @@ export function ForestScene({
                 <animate attributeName="opacity" values="0.6;0;0.6" dur="3.2s" repeatCount="indefinite" />
               </circle>
 
-              <circle cx="1080" cy="170" r="54" fill="url(#sunDisc)" />
+              <circle cx="1080" cy="170" r="54" fill="url(#discA)" />
               <circle
                 cx="1080"
                 cy="170"
