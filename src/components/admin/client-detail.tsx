@@ -15,8 +15,11 @@ import type { ClientRow, ProjectRow } from "@/lib/supabase"
 import type { PdfLinks } from "@/lib/data"
 import type { ProjectStage } from "@/lib/stages-store"
 import { StagesEditor } from "./stages-editor"
+import { DeliverablesEditor } from "./deliverables-editor"
+import type { Deliverable } from "@/lib/deliverables-store"
 import {
   FileText, Plus, Trash2, KeyRound, Star, Copy, Check, Eye, Download, ListChecks,
+  PackageCheck,
 } from "lucide-react"
 
 const initial: ActionState = {}
@@ -306,15 +309,18 @@ export function ProjectsSection({
   projects,
   pdfLinks = {},
   stages = {},
+  deliverables = {},
 }: {
   clientId: string
   projects: ProjectRow[]
   pdfLinks?: Record<string, PdfLinks>
   stages?: Record<string, ProjectStage[] | null>
+  deliverables?: Record<string, Deliverable[]>
 }) {
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<string | null>(null)
   const [progress, setProgress] = useState<string | null>(null)
+  const [delivering, setDelivering] = useState<string | null>(null)
 
   return (
     <Card
@@ -357,6 +363,19 @@ export function ProjectsSection({
 
                 <button
                   type="button"
+                  onClick={() => setDelivering(delivering === project.id ? null : project.id)}
+                  className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border text-xs font-semibold transition-colors ${
+                    delivering === project.id
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-border text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <PackageCheck className="w-3.5 h-3.5" />
+                  {(deliverables[project.id]?.length ?? 0) || "Add"} deliverables
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setEditing(editing === project.id ? null : project.id)}
                   className="inline-flex items-center h-8 px-3 rounded-lg border border-border text-xs font-semibold text-foreground hover:bg-muted transition-colors"
                 >
@@ -393,6 +412,15 @@ export function ProjectsSection({
                 <StagesEditor
                   projectId={project.id}
                   stages={stages[project.id] ?? null}
+                />
+              </div>
+            )}
+
+            {delivering === project.id && (
+              <div className="mt-5 pt-5 border-t border-border">
+                <DeliverablesEditor
+                  projectId={project.id}
+                  items={deliverables[project.id] ?? []}
                 />
               </div>
             )}

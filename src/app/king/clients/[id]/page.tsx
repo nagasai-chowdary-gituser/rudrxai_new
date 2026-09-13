@@ -8,6 +8,7 @@ import {
   type PdfLinks,
 } from "@/lib/data"
 import { readStagesForProjects } from "@/lib/stages-store"
+import { readDeliverablesForProjects } from "@/lib/deliverables-store"
 import {
   ClientDetailsForm,
   DeleteClientForm,
@@ -34,7 +35,11 @@ export default async function AdminClientPage({
 
   // Sign every uploaded brief once here, so the panel can open them without
   // the browser ever touching Supabase directly.
-  const stages = await readStagesForProjects(projects.map((project) => project.id))
+  const projectIds = projects.map((project) => project.id)
+  const [stages, deliverables] = await Promise.all([
+    readStagesForProjects(projectIds),
+    readDeliverablesForProjects(projectIds),
+  ])
 
   const pdfLinks: Record<string, PdfLinks> = {}
   await Promise.all(
@@ -70,6 +75,7 @@ export default async function AdminClientPage({
         projects={projects}
         pdfLinks={pdfLinks}
         stages={stages}
+        deliverables={deliverables}
       />
       <ReviewToggle client={client} hasReview={Boolean(review)} />
       <ClientDetailsForm client={client} />

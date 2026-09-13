@@ -5,6 +5,8 @@ import { getClientSession } from "@/lib/session"
 import { formatMoney, getProject, getSignedPdfLinks } from "@/lib/data"
 import { defaultStages, readStages } from "@/lib/stages-store"
 import { DEFAULT_STAGES } from "@/lib/stages"
+import { readDeliverables } from "@/lib/deliverables-store"
+import { ProjectDeliverables } from "@/components/portal/project-deliverables"
 import { ProjectTimeline } from "@/components/portal/project-timeline"
 import { ArrowLeft, Download, Eye, FileText, RefreshCw, Wallet, Receipt } from "lucide-react"
 
@@ -48,9 +50,10 @@ export default async function PortalProjectPage({
   // client's project by guessing its id.
   if (!project || project.client_id !== clientId) notFound()
 
-  const [pdf, savedStages] = await Promise.all([
+  const [pdf, savedStages, deliverables] = await Promise.all([
     project.pdf_path ? getSignedPdfLinks(project.pdf_path, project.pdf_name) : null,
     readStages(project.id),
+    readDeliverables(project.id),
   ])
   // Until the admin saves a flow, show the default one with nothing ticked —
   // an empty right-hand column reads as broken rather than "not started".
@@ -141,6 +144,9 @@ export default async function PortalProjectPage({
                 sub={revisionsLeft === 0 ? "None remaining" : `${revisionsLeft} remaining`}
               />
             </div>
+
+
+            <ProjectDeliverables items={deliverables} />
           </div>
 
           {/* The transparency flow, beside the boxes on a monitor */}

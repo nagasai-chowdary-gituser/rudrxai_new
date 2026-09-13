@@ -15,6 +15,13 @@ import {
   writeStages,
   type ProjectStage,
 } from "@/lib/stages-store"
+import { MAX_DELIVERABLES, MAX_DELIVERABLE_TEXT } from "@/lib/deliverables"
+import {
+  deleteDeliverables,
+  newDeliverableId,
+  writeDeliverables,
+  type Deliverable,
+} from "@/lib/deliverables-store"
 
 /**
  * Admin mutations.
@@ -209,7 +216,9 @@ export async function deleteClient(
     .select("id, pdf_path")
     .eq("client_id", clientId)
 
-  await deleteStages((projects ?? []).map((project) => project.id))
+  const projectIds = (projects ?? []).map((project) => project.id)
+  await deleteStages(projectIds)
+  await deleteDeliverables(projectIds)
 
   const paths = (projects ?? [])
     .map((project) => project.pdf_path)
@@ -349,6 +358,7 @@ export async function deleteProject(
   }
 
   await deleteStages([projectId])
+  await deleteDeliverables([projectId])
 
   const { error } = await supabase.from("projects").delete().eq("id", projectId)
   if (error) return { error: `Could not delete project: ${error.message}` }
@@ -427,6 +437,53 @@ export async function saveStages(
   revalidatePath(`/king/clients/${project.client_id}`)
 
   return { success: "Progress saved." }
+}
+
+// ------------------------------------------------------------- deliverables
+
+/**
+ * Replace a project's deliverables in one go.
+ *
+ * A plain ordered list — the number the client sees is just the position, so
+ * reordering renumbers without touching anything stored.
+ */
+export async function saveDeliverables(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireAdmin()
+
+  const projectId = text(formData, "project_id", 40)
+  const project = await getProject(projectId)
+  if (!project) return { error: "Project not found." }
+
+  let incoming: { id?: string; text: string }[]
+  try {
+    const raw = formData.get("deliverables")
+    incoming = typeof raw === "string" ? JSON.parse(raw) : []
+  } catch {
+    return { error: "Could not read the deliverables list." }
+  }
+
+  if (!Array.isArray(incoming)) return { error: "Could not read the deliverables list." }
+  if (incoming.length > MAX_DELIVERABLES) {
+    return { error: `A project can have at most ${MAX_DELIVERABLES} deliverables.` }
+  }
+
+  const next: Deliverable[] = incoming
+    .map((item) => ({
+      id: typeof item.id === "string" && item.id ? item.id : newDeliverableId(),
+      text: String(item.text ?? "").trim().slice(0, MAX_DELIVERABLE_TEXT),
+    }))
+    .filter((item) => item.text.length > 0)
+
+  const result = await writeDeliverables(projectId, next)
+  if (result.error) return { error: result.error }
+
+  await logAdminEvent("deliverables_saved", `${projectId}:${next.length}`)
+  revalidatePath(`/king/clients/${project.client_id}`)
+
+  return { success: next.length === 0 ? "Deliverables cleared." : "Deliverables saved." }
 }
 
 // ------------------------------------------------------------------ reviews
