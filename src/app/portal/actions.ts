@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { getSupabase } from "@/lib/supabase"
 import { verifyPassword } from "@/lib/password"
-import { getClientIp, isRateLimited } from "@/lib/rate-limit"
+import { getClientIp } from "@/lib/rate-limit"
+import {
+  clearPortalAttempts,
+  isPortalLockedOut,
+  recordPortalFailure,
+} from "@/lib/portal-throttle"
 import { headers } from "next/headers"
 import {
   clearClientSession,
@@ -27,12 +32,15 @@ export async function login(
   }
 
   // Throttle credential stuffing. Server actions have no request object, so the
-  // IP comes from the incoming headers.
+  // IP comes from the incoming headers. Counted in the database so the limit
+  // survives across serverless instances.
   const headerList = await headers()
   const ip = getClientIp(new Request("https://local", { headers: headerList }))
 
-  if (isRateLimited(`portal:${ip}`, { limit: 10, windowMs: 60_000 })) {
-    return { error: "Too many attempts. Please wait a minute and try again." }
+  if (await isPortalLockedOut(ip)) {
+    return {
+      error: "Too many sign-in attempts. Please try again in 15 minutes.",
+    }
   }
 
   let client
@@ -47,9 +55,17 @@ export async function login(
   // cannot be used to discover which usernames exist.
   const invalid = { error: "Incorrect username or password." }
 
-  if (!client || !client.is_active) return invalid
-  if (!(await verifyPassword(password, client.password_hash))) return invalid
+  if (!client || !client.is_active) {
+    await recordPortalFailure(ip)
+    return invalid
+  }
 
+  if (!(await verifyPassword(password, client.password_hash))) {
+    await recordPortalFailure(ip)
+    return invalid
+  }
+
+  await clearPortalAttempts(ip)
   await createClientSession(client.id)
   // Greet them by name before dropping them into the portal.
   redirect("/portal/welcome")

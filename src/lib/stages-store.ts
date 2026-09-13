@@ -20,6 +20,17 @@ export type ProjectStage = {
   completed_at: string | null
 }
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Every path is built from a project id. Refusing anything that is not a uuid
+ * means a crafted id can never escape its folder, whatever calls this.
+ */
+function isUuid(value: string): boolean {
+  return UUID_PATTERN.test(value)
+}
+
 function stagePath(projectId: string): string {
   return `stages/${projectId}.json`
 }
@@ -46,6 +57,7 @@ function parseStages(raw: unknown): ProjectStage[] {
  * tell that apart from an admin who deliberately cleared the list.
  */
 export async function readStages(projectId: string): Promise<ProjectStage[] | null> {
+  if (!isUuid(projectId)) return null
   const supabase = getSupabase()
 
   const { data, error } = await supabase.storage
@@ -90,6 +102,7 @@ export async function writeStages(
   projectId: string,
   stages: ProjectStage[]
 ): Promise<{ error?: string }> {
+  if (!isUuid(projectId)) return { error: "Invalid project." }
   const supabase = getSupabase()
 
   const body = new Blob([JSON.stringify(stages)], { type: "application/json" })
@@ -111,9 +124,10 @@ export async function writeStages(
 
 /** Remove a project's stage file. Storage is not cascaded for us. */
 export async function deleteStages(projectIds: string[]): Promise<void> {
-  if (projectIds.length === 0) return
+  const ids = projectIds.filter(isUuid)
+  if (ids.length === 0) return
   const supabase = getSupabase()
-  await supabase.storage.from(PROJECT_FILES_BUCKET).remove(projectIds.map(stagePath))
+  await supabase.storage.from(PROJECT_FILES_BUCKET).remove(ids.map(stagePath))
 }
 
 /** A fresh id for a stage the admin has just added. */

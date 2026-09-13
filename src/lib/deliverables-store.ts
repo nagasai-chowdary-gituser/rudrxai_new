@@ -17,6 +17,17 @@ export type Deliverable = {
   text: string
 }
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Every path is built from a project id. Refusing anything that is not a uuid
+ * means a crafted id can never escape its folder, whatever calls this.
+ */
+function isUuid(value: string): boolean {
+  return UUID_PATTERN.test(value)
+}
+
 function deliverablePath(projectId: string): string {
   return `deliverables/${projectId}.json`
 }
@@ -36,6 +47,7 @@ function parse(raw: unknown): Deliverable[] {
 }
 
 export async function readDeliverables(projectId: string): Promise<Deliverable[]> {
+  if (!isUuid(projectId)) return []
   const supabase = getSupabase()
 
   const { data, error } = await supabase.storage
@@ -69,6 +81,7 @@ export async function writeDeliverables(
   projectId: string,
   items: Deliverable[]
 ): Promise<{ error?: string }> {
+  if (!isUuid(projectId)) return { error: "Invalid project." }
   const supabase = getSupabase()
 
   const body = new Blob([JSON.stringify(items)], { type: "application/json" })
@@ -90,11 +103,12 @@ export async function writeDeliverables(
 
 /** Storage is not cascaded, so a deleted project takes its file with it. */
 export async function deleteDeliverables(projectIds: string[]): Promise<void> {
-  if (projectIds.length === 0) return
+  const ids = projectIds.filter(isUuid)
+  if (ids.length === 0) return
   const supabase = getSupabase()
   await supabase.storage
     .from(PROJECT_FILES_BUCKET)
-    .remove(projectIds.map(deliverablePath))
+    .remove(ids.map(deliverablePath))
 }
 
 export function newDeliverableId(): string {

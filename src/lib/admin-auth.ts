@@ -111,6 +111,8 @@ export async function isLockedOut(ip: string): Promise<boolean> {
     .from("gate_attempts")
     .select("id", { count: "exact", head: true })
     .eq("ip", ip)
+    // Portal login failures have their own counter and must not close the den.
+    .neq("step", "portal")
     .gte("created_at", since)
 
   if (error) {
@@ -130,7 +132,7 @@ export async function recordFailedAttempt(ip: string, step: string): Promise<voi
 
 export async function clearAttempts(ip: string): Promise<void> {
   const supabase = getSupabase()
-  await supabase.from("gate_attempts").delete().eq("ip", ip)
+  await supabase.from("gate_attempts").delete().eq("ip", ip).neq("step", "portal")
 }
 
 export async function logAdminEvent(
