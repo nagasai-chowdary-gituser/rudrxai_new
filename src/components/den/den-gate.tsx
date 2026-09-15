@@ -6,7 +6,7 @@ import { PatternLock } from "./pattern-lock"
 import { ForestScene } from "./forest-scene"
 
 /**
- * The den: four torches beside the stone, then three doors deeper inside.
+ * The den: four torches beside the stone, then two doors deeper inside.
  *
  * Nothing here knows any answer. Every torch and every keystroke is decided by
  * /api/session, which replies only "ok" or refuses. A refusal at any point wipes
@@ -14,7 +14,7 @@ import { ForestScene } from "./forest-scene"
  * footer — not back one step.
  */
 
-type Stage = "daylight" | "torches" | "username" | "password" | "pattern" | "rejected" | "locked"
+type Stage = "daylight" | "torches" | "username" | "pattern" | "rejected" | "locked"
 
 const TORCHES = [
   { name: "red", lit: "#ef4444", glow: "rgba(239,68,68,0.55)" },
@@ -23,11 +23,12 @@ const TORCHES = [
   { name: "green", lit: "#22c55e", glow: "rgba(34,197,94,0.55)" },
 ]
 
+// The scene has four depths; with one door gone the sigil takes the deepest,
+// so the last door is still the darkest place in the den.
 const DEPTH: Record<string, 0 | 1 | 2 | 3> = {
   daylight: 0,
   torches: 0,
   username: 1,
-  password: 2,
   pattern: 3,
 }
 
@@ -107,7 +108,6 @@ export function DenGate() {
   const [busy, setBusy] = useState(false)
   const [doorOpen, setDoorOpen] = useState(false)
   const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
 
   const reject = () => {
     setStage("rejected")
@@ -144,7 +144,6 @@ export function DenGate() {
       }
 
       setUsername("")
-      setPassword("")
 
       if (step === "night") {
         // Let the sky finish turning before the torches become usable.
@@ -238,35 +237,23 @@ export function DenGate() {
           </div>
         )}
 
-        {(stage === "username" || stage === "password") && (
-          <StoneDoor
-            label={stage === "username" ? "First door" : "Second door"}
-            title={stage === "username" ? "Who approaches?" : "Speak the word"}
-          >
+        {stage === "username" && (
+          <StoneDoor label="First door" title="Who approaches?">
             <form
               onSubmit={(event) => {
                 event.preventDefault()
-                if (stage === "username") {
-                  attempt("username", username, "password")
-                } else {
-                  attempt("password", password, "pattern")
-                }
+                attempt("username", username, "pattern")
               }}
             >
               <input
-                key={stage}
-                type={stage === "username" ? "text" : "password"}
+                type="text"
                 autoFocus
                 autoComplete="off"
                 spellCheck={false}
-                value={stage === "username" ? username : password}
-                onChange={(event) =>
-                  stage === "username"
-                    ? setUsername(event.target.value)
-                    : setPassword(event.target.value)
-                }
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
                 className="w-full bg-black/50 border border-amber-200/20 rounded-lg px-4 py-3 text-amber-50 text-center tracking-wide focus:outline-none focus:border-amber-300/60 transition-colors"
-                aria-label={stage === "username" ? "Username" : "Password"}
+                aria-label="Username"
               />
               <button
                 type="submit"
@@ -280,7 +267,7 @@ export function DenGate() {
         )}
 
         {stage === "pattern" && (
-          <StoneDoor label="Third door" title="Trace the sigil">
+          <StoneDoor label="Second door" title="Trace the sigil">
             <PatternLock
               disabled={busy}
               onComplete={(pattern) => attempt("pattern", pattern, "pattern")}

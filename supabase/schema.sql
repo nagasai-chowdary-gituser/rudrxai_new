@@ -67,6 +67,9 @@ create index if not exists reviews_status_idx on public.reviews (status);
 create table if not exists public.admin_settings (
   id            integer primary key default 1 check (id = 1),
   username      text not null,
+  -- Unused. The den has no password: the torch colour, the username and the
+  -- pattern are the whole answer. Kept because dropping a column needs a
+  -- migration; it is seeded with a random value that nobody holds.
   password_hash text not null,
   -- No defaults: these are seeded from environment variables on first use, so
   -- the real answers never appear in this file.

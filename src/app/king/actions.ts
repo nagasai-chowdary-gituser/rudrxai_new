@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 import { PROJECT_FILES_BUCKET, getSupabase } from "@/lib/supabase"
 import { generatePassword, hashPassword } from "@/lib/password"
 import { clearAdminSession, getAdminSession } from "@/lib/session"
-import { logAdminEvent, updateAdminPassword } from "@/lib/admin-auth"
+import { logAdminEvent, updateAdminCredentials } from "@/lib/admin-auth"
 import { getProject } from "@/lib/data"
 import { DEFAULT_STAGES, MAX_STAGES, MAX_STAGE_LABEL } from "@/lib/stages"
 import {
@@ -518,25 +518,57 @@ export async function setReviewStatus(
 
 // ------------------------------------------------------------------- admin
 
-export async function changeAdminPassword(
+/**
+ * The den has no password — the username and the pattern are the whole answer.
+ * Both are changed here, together or one at a time.
+ */
+export async function changeAdminCredentials(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
   await requireAdmin()
 
-  const password = text(formData, "new_password", 100)
-  const confirm = text(formData, "confirm_password", 100)
+  const username = text(formData, "username", 60)
+  const rawPattern = text(formData, "pattern", 40)
 
-  if (password.length < 10) {
-    return { error: "Admin password must be at least 10 characters." }
+  if (!username && !rawPattern) {
+    return { error: "Change the name, the pattern, or both." }
   }
 
-  if (password !== confirm) return { error: "Passwords do not match." }
+  if (username && username.length < 3) {
+    return { error: "Username must be at least 3 characters." }
+  }
 
-  await updateAdminPassword(password)
-  await logAdminEvent("admin_password_changed")
+  let pattern: number[] | undefined
 
-  return { success: "Admin password changed. The old one no longer works." }
+  if (rawPattern) {
+    pattern = rawPattern
+      .split(",")
+      .map((part) => Number(part.trim()))
+      .filter((n) => Number.isInteger(n) && n >= 1 && n <= 9)
+
+    // A short pattern is guessable, and a repeated dot cannot be drawn on the
+    // lock at all — so it would be a pattern nobody could ever enter.
+    if (pattern.length < 4) {
+      // No example here: this file is committed publicly, and any example
+      // someone might have copied is a pattern worth trying at the door.
+      return { error: "Pattern must be at least 4 dots, each numbered 1-9, separated by commas." }
+    }
+
+    if (new Set(pattern).size !== pattern.length) {
+      return { error: "Pattern cannot use the same dot twice." }
+    }
+  }
+
+  await updateAdminCredentials({ username: username || undefined, pattern })
+  await logAdminEvent(
+    "admin_credentials_changed",
+    [username && "username", pattern && "pattern"].filter(Boolean).join("+")
+  )
+
+  return {
+    success: "Den updated. Write it down — the old answer no longer opens the stone.",
+  }
 }
 
 export async function signOut(): Promise<void> {

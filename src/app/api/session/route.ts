@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { getClientIp } from "@/lib/rate-limit"
 import {
-  checkAdminPassword,
   checkAdminPattern,
   checkAdminUsername,
   checkGateColor,
@@ -29,7 +28,7 @@ export const dynamic = "force-dynamic"
  *   knock1   footer taps        → the 404 page starts listening
  *   knock2   taps on "again"    → the den will render
  *   color    a torch beside the den
- *   username / password / pattern
+ *   username / pattern
  *
  * Every stage is decided here, on the server. The browser is told only "ok" or
  * nothing at all, and each cleared stage is recorded in a signed, short-lived
@@ -37,16 +36,19 @@ export const dynamic = "force-dynamic"
  * crafting requests by hand.
  */
 
-type Step = "knock1" | "knock2" | "night" | "color" | "username" | "password" | "pattern"
+type Step = "knock1" | "knock2" | "night" | "color" | "username" | "pattern"
 
 // The sun must be put down before any torch is touched. Enforced here rather
 // than in the UI, so the order cannot be skipped by crafting a request.
+//
+// "password" is deliberately absent: the step was removed, so a request naming
+// it is not a wrong password but an unknown step, and is refused as a 404 like
+// any other nonsense.
 const GATE_ORDER: Record<string, number> = {
   night: 0,
   color: 1,
   username: 2,
-  password: 3,
-  pattern: 4,
+  pattern: 3,
 }
 
 function tapsRequired(name: "KNOCK_FOOTER_TAPS" | "KNOCK_AGAIN_TAPS"): number {
@@ -57,7 +59,7 @@ function tapsRequired(name: "KNOCK_FOOTER_TAPS" | "KNOCK_AGAIN_TAPS"): number {
 /**
  * One response for every failure, and it is a 404 — the same thing this route
  * would say if it did not exist. Nothing distinguishes a wrong torch from a
- * wrong password, or a real endpoint from a dead one.
+ * wrong name, or a real endpoint from a dead one.
  */
 function nothingHere() {
   return new NextResponse(null, { status: 404 })
@@ -87,7 +89,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: true })
     }
 
-    // ----------------------------------------------------------- the 4 doors
+    // ------------------------------------------------------------- the doors
     // Reaching any door at all requires having knocked through to the den.
     if ((await getKnock()) < 2) return nothingHere()
 
@@ -118,8 +120,6 @@ export async function POST(request: Request) {
       passed = typeof body.value === "string" && (await checkGateColor(body.value))
     } else if (step === "username") {
       passed = typeof body.value === "string" && (await checkAdminUsername(body.value))
-    } else if (step === "password") {
-      passed = typeof body.value === "string" && (await checkAdminPassword(body.value))
     } else if (step === "pattern") {
       const pattern = Array.isArray(body.value)
         ? body.value.filter((n: unknown): n is number => typeof n === "number")

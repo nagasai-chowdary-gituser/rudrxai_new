@@ -1,14 +1,21 @@
 import "server-only"
 
+import { randomBytes } from "node:crypto"
+
 import { getSupabase, AdminSettingsRow } from "./supabase"
-import { hashPassword, safeEqual, verifyPassword } from "./password"
+import { hashPassword, safeEqual } from "./password"
 
 /**
  * Admin credential store.
  *
  * Seeded once from environment variables, then kept in Supabase so the
- * password, pattern and gate colour can be changed from the panel without a
+ * username, pattern and gate colour can be changed from the panel without a
  * redeploy. Environment values act only as the initial seed.
+ *
+ * There is no admin password: the den is opened by the torch colour, the
+ * username and the pattern. The password_hash column still exists because
+ * dropping it needs a migration, but nothing reads it — it is seeded with a
+ * random value no one holds, so it cannot be used even by accident.
  */
 
 const LOCKOUT_WINDOW_MINUTES = 15
@@ -30,13 +37,12 @@ export async function getAdminSettings(): Promise<AdminSettingsRow> {
   // Every value must come from the environment. No fallbacks: a default here
   // would hardcode the real answer into source that is committed publicly.
   const username = process.env.ADMIN_USERNAME
-  const password = process.env.ADMIN_PASSWORD
   const gateColor = process.env.ADMIN_GATE_COLOR
   const pattern = process.env.ADMIN_PATTERN
 
-  if (!username || !password || !gateColor || !pattern) {
+  if (!username || !gateColor || !pattern) {
     throw new Error(
-      "Admin gate is not configured — set ADMIN_USERNAME, ADMIN_PASSWORD, " +
+      "Admin gate is not configured — set ADMIN_USERNAME, " +
         "ADMIN_GATE_COLOR and ADMIN_PATTERN in the environment"
     )
   }
@@ -44,7 +50,9 @@ export async function getAdminSettings(): Promise<AdminSettingsRow> {
   const seeded = {
     id: 1,
     username,
-    password_hash: await hashPassword(password),
+    // Unused, and not null in the schema. A random value keeps the column
+    // honest: there is no password, so no one can hold the right one.
+    password_hash: await hashPassword(randomBytes(32).toString("hex")),
     gate_color: gateColor.trim().toLowerCase(),
     pattern: pattern.replace(/\s/g, ""),
   }
@@ -62,16 +70,25 @@ export async function getAdminSettings(): Promise<AdminSettingsRow> {
   return inserted as AdminSettingsRow
 }
 
-export async function updateAdminPassword(newPassword: string): Promise<void> {
+/**
+ * Rotate what the den asks for. With no password left, these two are the whole
+ * answer, so being able to change them from the panel is the only way to
+ * recover if either is ever seen over a shoulder.
+ */
+export async function updateAdminCredentials(update: {
+  username?: string
+  pattern?: number[]
+}): Promise<void> {
   await getAdminSettings() // ensure the row exists
   const supabase = getSupabase()
 
-  const { error } = await supabase
-    .from("admin_settings")
-    .update({ password_hash: await hashPassword(newPassword), updated_at: new Date().toISOString() })
-    .eq("id", 1)
+  const changes: Record<string, string> = { updated_at: new Date().toISOString() }
+  if (update.username) changes.username = update.username.trim()
+  if (update.pattern) changes.pattern = update.pattern.join(",")
 
-  if (error) throw new Error(`Failed to update admin password: ${error.message}`)
+  const { error } = await supabase.from("admin_settings").update(changes).eq("id", 1)
+
+  if (error) throw new Error(`Failed to update admin credentials: ${error.message}`)
 }
 
 // --------------------------------------------------------- step verification
@@ -84,11 +101,6 @@ export async function checkGateColor(color: string): Promise<boolean> {
 export async function checkAdminUsername(username: string): Promise<boolean> {
   const settings = await getAdminSettings()
   return safeEqual(username.trim().toLowerCase(), settings.username.trim().toLowerCase())
-}
-
-export async function checkAdminPassword(password: string): Promise<boolean> {
-  const settings = await getAdminSettings()
-  return verifyPassword(password, settings.password_hash)
 }
 
 export async function checkAdminPattern(pattern: number[]): Promise<boolean> {
