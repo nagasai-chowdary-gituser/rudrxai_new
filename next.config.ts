@@ -10,14 +10,25 @@ import type { NextConfig } from "next"
  * refused, which is how an XSS actually loads a payload. Styles need it too,
  * for Tailwind's arbitrary values and styled-jsx.
  */
+/**
+ * Next's dev server hydrates through React Fast Refresh, which evaluates code
+ * as a string. Without 'unsafe-eval' that throws and nothing on the page
+ * becomes interactive — the site renders but no button works.
+ *
+ * It is added for `next dev` only. Production builds never call eval, so the
+ * deployed policy stays strict.
+ */
+const isDev = process.env.NODE_ENV !== "production"
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com",
   "font-src 'self' data:",
   // The contact form posts straight to Web3Forms from the browser.
-  "connect-src 'self' https://api.web3forms.com",
+  // ws: is the dev server's hot-reload socket, and is not in production builds.
+  `connect-src 'self' https://api.web3forms.com${isDev ? " ws:" : ""}`,
   "form-action 'self' https://api.web3forms.com",
   "media-src 'self'",
   "object-src 'none'",
