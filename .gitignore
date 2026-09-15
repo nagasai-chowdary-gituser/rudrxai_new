@@ -49,3 +49,6 @@ prisma/migrations/
 .vscode/
 *.swp
 *.swo
+
+# Local browser test harness — never deployed, never pushed
+.testing/

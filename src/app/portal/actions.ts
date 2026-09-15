@@ -51,6 +51,9 @@ export async function login(
     return { error: "Sign-in is unavailable right now. Please try again shortly." }
   }
 
+  // Password verification is the only thing that decides this. Everything
+  // around it is bookkeeping and is written so it cannot throw.
+
   // Same message whether the username or the password was wrong, so the form
   // cannot be used to discover which usernames exist.
   const invalid = { error: "Incorrect username or password." }

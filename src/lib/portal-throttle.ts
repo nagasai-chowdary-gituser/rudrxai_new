@@ -16,6 +16,15 @@ const WINDOW_MINUTES = 15
 const THRESHOLD = 10
 
 export async function isPortalLockedOut(ip: string): Promise<boolean> {
+  try {
+    return await countAttempts(ip)
+  } catch (error) {
+    console.error("Portal lockout check failed:", error)
+    return false
+  }
+}
+
+async function countAttempts(ip: string): Promise<boolean> {
   const supabase = getSupabase()
   const since = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString()
 
@@ -36,12 +45,25 @@ export async function isPortalLockedOut(ip: string): Promise<boolean> {
   return (count ?? 0) >= THRESHOLD
 }
 
+/**
+ * Both of these are bookkeeping, never the decision itself. A failure here must
+ * not change the outcome of a login: a database hiccup while clearing the
+ * counter would otherwise make a correct password appear wrong.
+ */
 export async function recordPortalFailure(ip: string): Promise<void> {
-  const supabase = getSupabase()
-  await supabase.from("gate_attempts").insert({ ip, step: PORTAL_STEP })
+  try {
+    const supabase = getSupabase()
+    await supabase.from("gate_attempts").insert({ ip, step: PORTAL_STEP })
+  } catch (error) {
+    console.error("Could not record a portal failure:", error)
+  }
 }
 
 export async function clearPortalAttempts(ip: string): Promise<void> {
-  const supabase = getSupabase()
-  await supabase.from("gate_attempts").delete().eq("ip", ip).eq("step", PORTAL_STEP)
+  try {
+    const supabase = getSupabase()
+    await supabase.from("gate_attempts").delete().eq("ip", ip).eq("step", PORTAL_STEP)
+  } catch (error) {
+    console.error("Could not clear portal attempts:", error)
+  }
 }
